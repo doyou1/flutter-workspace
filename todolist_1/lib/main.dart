@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:todolist_1/pages/event_page.dart';
+import 'package:todolist_1/pages/task_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,6 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.red,
@@ -75,34 +78,8 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.all(24.0),
           child: _button(context),
         ),
-        _taskUncomplete("Call Tom about appointment"),
-        _taskUncomplete("Fix onboarding experience"),
-        _taskUncomplete("Edit API documentation"),
-        _taskUncomplete("Setup user focus group"),
-        const Divider(),
-        const SizedBox(height: 16),
-        _taskUncomplete("Have coffe with Sam"),
-        _taskUncomplete("Meet with sales"),
+        const Expanded(child: EventPage()),
       ],
-    );
-  }
-
-  Padding _taskUncomplete(String task) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, bottom: 24.0),
-      child: Row(
-        children: <Widget>[
-          Icon(
-            Icons.radio_button_unchecked,
-            color: Theme.of(context).colorScheme.secondary,
-            size: 20,
-          ),
-          const SizedBox(
-            width: 28,
-          ),
-          Text(task)
-        ],
-      ),
     );
   }
 
