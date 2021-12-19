@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:todolist_1/widgets/custom_button.dart';
+import 'package:todolist_1/widgets/custom_date_time_picker.dart';
+import 'package:todolist_1/widgets/custom_modal_action_button.dart';
 import 'package:todolist_1/widgets/custom_textfield.dart';
 
 class AddTaskPage extends StatefulWidget {
@@ -10,6 +12,34 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
+  String _selectedDate = 'Pick date';
+  String _selectedTime = 'Pick time';
+
+  Future _pickDate() async {
+    DateTime? datepick = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now().add(const Duration(days: -365)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (datepick != null) {
+      setState(() {
+        _selectedDate = datepick.toString();
+      });
+    }
+  }
+
+  Future _pickTime() async {
+    TimeOfDay? timepick =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+
+    if (timepick != null) {
+      setState(() {
+        _selectedTime = timepick.toString();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -25,30 +55,22 @@ class _AddTaskPageState extends State<AddTaskPage> {
             height: 24,
           ),
           CustomTextField(labelText: "Enter task name"),
-          _actionButton(context),
+          CustomDateTimePicker(
+              onPressed: _pickDate,
+              icon: Icons.date_range,
+              value: _selectedDate),
+          CustomDateTimePicker(
+              onPressed: _pickTime,
+              icon: Icons.access_time,
+              value: _selectedTime),
+          CustomModalActionButton(
+            onClose: () {
+              Navigator.of(context).pop();
+            },
+            onSave: () {},
+          )
         ],
       ),
-    );
-  }
-
-  Widget _actionButton(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        CustomButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          buttonText: "Close",
-          color: Colors.white,
-          textColor: Theme.of(context).colorScheme.secondary,
-        ),
-        CustomButton(
-            onPressed: () {},
-            buttonText: "Save",
-            color: Theme.of(context).colorScheme.secondary,
-            textColor: Colors.white),
-      ],
     );
   }
 }

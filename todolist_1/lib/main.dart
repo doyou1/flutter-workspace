@@ -35,8 +35,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final PageController _pageController = PageController();
+
+  double currentPage = 0;
+
   @override
   Widget build(BuildContext context) {
+    _pageController.addListener(() {
+      setState(() {
+        currentPage = _pageController.page!;
+      });
+    });
     return Scaffold(
       body: Stack(children: <Widget>[
         Container(height: 35, color: Theme.of(context).colorScheme.secondary),
@@ -53,9 +62,11 @@ class _MyHomePageState extends State<MyHomePage> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return const Dialog(
-                    child: AddEventPage(),
-                    shape: RoundedRectangleBorder(
+                return Dialog(
+                    child: currentPage == 0
+                        ? const AddTaskPage()
+                        : const AddEventPage(),
+                    shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12))));
               });
         },
@@ -74,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Column _mainContent(BuildContext context) {
+  Widget _mainContent(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -90,30 +101,56 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.all(24.0),
           child: _button(context),
         ),
-        const Expanded(child: EventPage()),
+        Expanded(
+            child: PageView(
+          controller: _pageController,
+          children: const <Widget>[TaskPage(), EventPage()],
+        )),
       ],
     );
   }
 
-  Row _button(BuildContext context) {
+  Widget _button(BuildContext context) {
     return Row(
       children: <Widget>[
         Expanded(
             child: CustomButton(
-                onPressed: () {},
-                buttonText: "Tasks",
-                color: Theme.of(context).colorScheme.secondary,
-                textColor: Colors.white)),
+          onPressed: () {
+            _pageController.previousPage(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.fastOutSlowIn);
+          },
+          buttonText: "Tasks",
+          color: currentPage < 0.5
+              ? Theme.of(context).colorScheme.secondary
+              : Colors.white,
+          textColor: currentPage < 0.5
+              ? Colors.white
+              : Theme.of(context).colorScheme.secondary,
+          borderColor: currentPage < 0.5
+              ? Colors.transparent
+              : Theme.of(context).colorScheme.secondary,
+        )),
         const SizedBox(
           width: 32,
         ),
         Expanded(
             child: CustomButton(
-          onPressed: () {},
+          onPressed: () {
+            _pageController.nextPage(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.fastOutSlowIn);
+          },
           buttonText: "Events",
-          color: Colors.white,
-          textColor: Theme.of(context).colorScheme.secondary,
-          borderColor: Theme.of(context).colorScheme.secondary,
+          color: currentPage > 0.5
+              ? Theme.of(context).colorScheme.secondary
+              : Colors.white,
+          textColor: currentPage > 0.5
+              ? Colors.white
+              : Theme.of(context).colorScheme.secondary,
+          borderColor: currentPage > 0.5
+              ? Colors.transparent
+              : Theme.of(context).colorScheme.secondary,
         )),
       ],
     );
