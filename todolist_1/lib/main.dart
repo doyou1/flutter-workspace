@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:todolist_1/pages/add_event_page.dart';
+import 'package:todolist_1/pages/add_task_page.dart';
 import 'package:todolist_1/pages/event_page.dart';
 import 'package:todolist_1/pages/task_page.dart';
+import 'package:todolist_1/widgets/custom_button.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,7 +49,16 @@ class _MyHomePageState extends State<MyHomePage> {
         _mainContent(context),
       ]),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const Dialog(
+                    child: AddEventPage(),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(12))));
+              });
+        },
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -87,32 +99,22 @@ class _MyHomePageState extends State<MyHomePage> {
     return Row(
       children: <Widget>[
         Expanded(
-          child: MaterialButton(
-            onPressed: () {},
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            color: Theme.of(context).colorScheme.secondary,
-            textColor: Colors.white,
-            padding: const EdgeInsets.all(14.0),
-            child: const Text("Tasks"),
-          ),
-        ),
+            child: CustomButton(
+                onPressed: () {},
+                buttonText: "Tasks",
+                color: Theme.of(context).colorScheme.secondary,
+                textColor: Colors.white)),
         const SizedBox(
           width: 32,
         ),
         Expanded(
-          child: MaterialButton(
-            onPressed: () {},
-            shape: RoundedRectangleBorder(
-                side:
-                    BorderSide(color: Theme.of(context).colorScheme.secondary),
-                borderRadius: BorderRadius.circular(12)),
-            color: Colors.white,
-            textColor: Theme.of(context).colorScheme.secondary,
-            padding: const EdgeInsets.all(14.0),
-            child: const Text("Events"),
-          ),
-        ),
+            child: CustomButton(
+          onPressed: () {},
+          buttonText: "Events",
+          color: Colors.white,
+          textColor: Theme.of(context).colorScheme.secondary,
+          borderColor: Theme.of(context).colorScheme.secondary,
+        )),
       ],
     );
   }

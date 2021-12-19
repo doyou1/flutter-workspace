@@ -42,8 +42,8 @@ class _EventPageState extends State<EventPage> {
                   decoration: IconDecoration(
                     iconSize: iconSize,
                     lineWidth: 1,
-                    firstData: index == 0 ?? true,
-                    lastData: index == _eventList.length - 1 ?? true,
+                    firstData: index == 0,
+                    lastData: index == _eventList.length - 1,
                   ),
                   child: Container(
                     decoration: const BoxDecoration(
