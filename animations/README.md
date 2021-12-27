@@ -1,16 +1,78 @@
 # animations
 
-A new Flutter project.
+<h2>reference</h2>
+<div><b>https://github.com/flutter/samples/tree/master/animations</b></div>
 
-## Getting Started
+# related keyword(for study... update later)
+- extends ... with ...
+- GestureDetector
+- GlobalKey
+- ElevatedButton
+- ValueChanged<T>
+- SingleChilScrollView
+- InputDecoration
+- TextFormField(validator)
+- WidgetsFlutterBinding
+- SystemChrome
+- SingleTickerProviderStateMixin
+- lerp(Tween's override method)
 
-This project is a starting point for a Flutter application.
+# 결과물
+## Basics
 
-A few resources to get you started if this is your first Flutter project:
+### AnimatedContainer
+![AnimatedContainer](./screenshots/basics/AnimatedContainer.gif)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+### PageRouteBuilder
+![PageRouteBuilder](./screenshots/basics/PageRouteBuilder.gif)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### AnimationController
+![AnimationController](./screenshots/basics/AnimationController.gif)
+
+### Tweens
+![Tweens](./screenshots/basics/Tweens.gif)
+
+### AnimatedBuilder
+![AnimatedBuilder_example](./screenshots/basics/AnimatedBuilder_example.gif)
+![AnimatedBuilder_custom](./screenshots/basics/AnimatedBuilder_custom.gif)
+
+### CustomTween
+![CustomTween](./screenshots/basics/CustomTween.gif)
+
+### FadeTransition
+![FadeTransition](./screenshots/basics/FadeTransition.gif)
+
+## Misc
+
+### ExpandableCard
+![ExpandableCard](./screenshots/miscs/ExpandableCard.gif)
+
+### Carousel
+![Carousel](./screenshots/miscs/Carousel_repeat.gif)
+
+### FocusImage
+![FocusImage](./screenshots/miscs/FocusImage.gif)
+
+### CardSwipe
+![CardSwipe](./screenshots/miscs/CardSwipe.gif)
+
+### RepeatingAnimation
+![RepeatingAnimation](./screenshots/miscs/RepeatingAnimation.gif)
+
+### SpringPhysics
+![SpringPhysics](./screenshots/miscs/SpringPhysics.gif)
+
+### AnimatedList
+![AnimatedList](./screenshots/miscs/AnimatedList.gif)
+
+### AnimatedPositioned
+![AnimatedPositioned](./screenshots/miscs/AnimatedPositioned.gif)
+
+### AnimatedSwitcher
+![AnimatedSwitcher](./screenshots/miscs/AnimatedSwitcher.gif)
+
+### HeroAnimation
+![HeroAnimation](./screenshots/miscs/HeroAnimation.gif)
+
+### CurvedAnimation
+![CurvedAnimation](./screenshots/miscs/CurvedAnimation.gif)
