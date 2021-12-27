@@ -5,6 +5,17 @@ import 'package:animations/src/basics/05_animated_builder.dart';
 import 'package:animations/src/basics/06_custom_tween_page.dart';
 import 'package:animations/src/basics/07_tween_sequence.dart';
 import 'package:animations/src/basics/08_fade_transition.dart';
+import 'package:animations/src/miscs/01_expand_card_page.dart';
+import 'package:animations/src/miscs/02_carousel_page.dart';
+import 'package:animations/src/miscs/03_focus_image_page.dart';
+import 'package:animations/src/miscs/04_card_swipe_page.dart';
+import 'package:animations/src/miscs/05_repeating_animation_page.dart';
+import 'package:animations/src/miscs/06_physics_card_drag_page.dart';
+import 'package:animations/src/miscs/07_animated_list_page.dart';
+import 'package:animations/src/miscs/08_animated_positioned_page.dart';
+import 'package:animations/src/miscs/09_animated_switcher_page.dart';
+import 'package:animations/src/miscs/10_hero_animation_page.dart';
+import 'package:animations/src/miscs/11_curved_animation_page.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/src/basics/01_animated_container_page.dart';
 
@@ -58,50 +69,50 @@ final basics = [
 ];
 
 final miscs = [
-  // Item(
-  //     name: 'Fepandable Card',
-  //     route: FepandableCard.routeName,
-  //     builder: (context) => const FepandableCard()),
-  // Item(
-  //     name: 'Carousel',
-  //     route: Carousel.routeName,
-  //     builder: (context) => const Carousel()),
-  // Item(
-  //     name: 'Focus Image',
-  //     route: FocusImage.routeName,
-  //     builder: (context) => const FocusImage()),
-  // Item(
-  //     name: 'Card Swipe',
-  //     route: CardSwipe.routeName,
-  //     builder: (context) => const CardSwipe()),
-  // Item(
-  //     name: 'Repeating Animation',
-  //     route: RepeatingAnimation.routeName,
-  //     builder: (context) => const RepeatingAnimation()),
-  // Item(
-  //     name: 'Spring Physics',
-  //     route: SpringPhysics.routeName,
-  //     builder: (context) => const SpringPhysics()),
-  // Item(
-  //     name: 'AnimatedList',
-  //     route: AnimatedList.routeName,
-  //     builder: (context) => const AnimatedList()),
-  // Item(
-  //     name: 'AnimatedPositioned ',
-  //     route: AnimatedPositioned.routeName,
-  //     builder: (context) => const AnimatedPositioned()),
-  // Item(
-  //     name: 'AnimatedSwitcher',
-  //     route: AnimatedSwitcher.routeName,
-  //     builder: (context) => const AnimatedSwitcher()),
-  // Item(
-  //     name: 'Hero Animation',
-  //     route: HeroAnimation.routeName,
-  //     builder: (context) => const HeroAnimation()),
-  // Item(
-  //     name: 'Curved Animation',
-  //     route: CurvedAnimation.routeName,
-  //     builder: (context) => const CurvedAnimation()),
+  Item(
+      name: 'Expandable Card',
+      route: ExpandCardPage.routeName,
+      builder: (context) => const ExpandCardPage()),
+  Item(
+      name: 'Carousel',
+      route: CarouselPage.routeName,
+      builder: (context) => CarouselPage()),
+  Item(
+      name: 'Focus Image',
+      route: FocusImagePage.routeName,
+      builder: (context) => const FocusImagePage()),
+  Item(
+      name: 'Card Swipe',
+      route: CardSwipePage.routeName,
+      builder: (context) => const CardSwipePage()),
+  Item(
+      name: 'Repeating Animation',
+      route: RepeatingAnimationPage.routeName,
+      builder: (context) => const RepeatingAnimationPage()),
+  Item(
+      name: 'Spring Physics',
+      route: PhysicsCardDragPage.routeName,
+      builder: (context) => const PhysicsCardDragPage()),
+  Item(
+      name: 'AnimatedList',
+      route: AnimatedListPage.routeName,
+      builder: (context) => const AnimatedListPage()),
+  Item(
+      name: 'AnimatedPositioned ',
+      route: AnimatedPositionedPage.routeName,
+      builder: (context) => const AnimatedPositionedPage()),
+  Item(
+      name: 'AnimatedSwitcher',
+      route: AnimatedSwitcherPage.routeName,
+      builder: (context) => const AnimatedSwitcherPage()),
+  Item(
+      name: 'Hero Animation',
+      route: HeroAnimationPage.routeName,
+      builder: (context) => const HeroAnimationPage()),
+  Item(
+      name: 'Curved Animation',
+      route: CurvedAnimationPage.routeName,
+      builder: (context) => const CurvedAnimationPage()),
 ];
 
 final basicRoutes =
