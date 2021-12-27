@@ -1,3 +1,4 @@
+import 'package:animations/src/basics/01_animated_container_page.dart';
 import 'package:animations/src/basics/02_page_route_builder_page.dart';
 import 'package:animations/src/basics/03_animation_controller_page.dart';
 import 'package:animations/src/basics/04_tweens_page.dart';
@@ -17,7 +18,6 @@ import 'package:animations/src/miscs/09_animated_switcher_page.dart';
 import 'package:animations/src/miscs/10_hero_animation_page.dart';
 import 'package:animations/src/miscs/11_curved_animation_page.dart';
 import 'package:flutter/material.dart';
-import 'package:animations/src/basics/01_animated_container_page.dart';
 
 void main() => runApp(const Animations());
 
