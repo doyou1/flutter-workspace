@@ -4,7 +4,7 @@
 <div><b>https://github.com/flutter/samples/tree/master/animations</b></div>
 
 # related keyword(for study... update later)
-- extends ... with ...
+- [extends ... with ...](https://picayune-judge-296.notion.site/Flutter-Dart-extends-vs-with-vs-implements-433ee1a5b93949b6aab705f9d7db178e)
 - GestureDetector
 - GlobalKey
 - ElevatedButton
