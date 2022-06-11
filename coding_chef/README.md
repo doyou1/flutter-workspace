@@ -65,6 +65,7 @@ Center(
     ),
 ),
 ```
+![center&column](./screenshots/center%26column.png)
 
 ```
 Center(
@@ -78,6 +79,6 @@ Center(
     ),
 ),
 ```
+![delete_mainAxisAlignment](./screenshots/delete_mainAxisAlignment.png)
 
 - summary : Center는 "상하", Column은 "좌우"
-
