@@ -82,3 +82,55 @@ Center(
 ![delete_mainAxisAlignment](./screenshots/delete_mainAxisAlignment.png)
 
 - summary : Center는 "상하", Column은 "좌우"
+
+# Class and Widget
+- Class { 속성: 액정, 카메라 모듈, 홈버튼, 스크린 기능: 전화 걸기, 사진찍기, 인터넷 검색}
+- 인스턴스 : Class로 정의된 설계대로 만들어진 사물
+- 프로그래밍 상에서의 클래스란?
+    - 객체가 가져야 하는 속성과 기능을 정의한 내용을 담고 있는 설계도 역할
+- 프로그래밍 상에서의 객체란?
+    - 클래스가 정으된 후 메모리상에 할당되었을 때 이를 객체라고 함
+- 프로그래밍 상에서의 인스턴스란?
+    - 클래스를 기반으로 생성 됨
+    - 클래스의 속성과 기능을 똑같이 가지고 있고, 프로그래밍 상에서 사용되는 대상
+```dart
+class Person {
+    String name;
+    // var name = 'John';
+    int age;
+    String sex;
+}
+
+void main() {
+    Person p1 = new Person();
+    p1.age = 29;
+    print(p1.age);
+}
+```
+
+- 생성자와 관련된 함수의 구조와 기능
+- 생성자의 구조와 역할
+- 클래스와 위젯의 관계
+```dart
+class Person {
+    String name;
+    int age;
+    String sex;
+
+    Person(String name, int age, String sex) {
+    // Person({String name, int age, String sex}) { // optional    
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+    }
+}
+
+void main() {
+    Person p1 = new Person("JH", 29, "male");
+    Person p2 = new Person("doyou", 25, "female");
+    print(p1.age);  // 29
+    print(p2.age);  // 25
+}
+
+new Scaffold()
+```
