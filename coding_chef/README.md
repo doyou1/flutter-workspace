@@ -134,3 +134,15 @@ void main() {
 
 new Scaffold()
 ```
+
+# BuildContext
+- "Scaffold.of() called with a context that does not contain a Scaffold"
+- "A handle to the location of a widget in the widget tree."
+    - "widget tree에서 현재 widget의 위치를 알 수 있는 정보"
+<br>
+- build method는 "Scaffold Widget"을 리턴하는데, 이때 widget tree상에서 "어디"에 위치하는 지에 대한 정보를 가진 "context"를 함께 리턴한다.
+- 모든 widget은 자신만의 BuildContext를 가지고 있다. 
+- 이 BuildContext는 stateless 위젯이나 state 빌드 메서드에 의해서 리턴된 위젯의 부모가 된다.
+- Scaffold 위젯은 부모인 MyPage 위젯의 context를 물러받는다.
+<br>
+- MyPage widget build method -> (MyPage context) -> Scaffold Widget
