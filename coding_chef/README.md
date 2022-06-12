@@ -6,3 +6,6 @@
 - ./easy_v2
     - 코딩셰프님의 "플러터 강의 순한 맛 시즌2"
     - https://www.youtube.com/watch?v=FAi7mTyKW60&list=PLQt_pzi-LLfo1sKDaFN1SOuDVP85OwK4M
+- ./hard_v1
+    - 코딩셰프님의 "플러터 강의 조금 매운맛"
+    - https://www.youtube.com/watch?v=StvbitxUKSo&list=PLQt_pzi-LLfoOpp3b-pnnLXgYpiFEftLB
