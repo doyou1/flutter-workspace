@@ -168,3 +168,123 @@ new Scaffold()
 - Navigator - stack 자료구조
     - pop method
     - push method
+
+# Map 자료구조
+- Key : Value
+- Sea : 바다
+- String : Widget builder
+
+# Collection and Generic
+1. String interpolation
+```dart
+void main() {
+    String name = "Sean";
+    print(name);
+
+    print("Hi, $name, what's up?");
+}
+```
+
+- $a님 반갑습니다 => 홍길동님 반갑습니다
+- $b님 반갑습니다 => 두유님 반갑습니다
+    - Interpolation: 보간법
+        - 당신의 점수는 $score이며, 당신의 레벨은 $level입니다.
+
+2. Collection / Generic
+- Collection : 데이터들을 모아서 가지고 있는 자료구조
+- Generic: Collection이 가지고 있는 데이터들의 데이터 타입을 지정
+```dart
+int addNumber(int num1, int num2) {
+    return num1 + num2;
+}
+
+void main() {
+    // var number = new List();
+    // List number = new List(); // List<dynamic>
+    /**
+    List<dynamic> number = new List();
+    
+    number.add(2);
+    number.add("test");
+    number.add(7.4);
+    number.add(addNumber(3, 4));
+    number.add(true);
+    print(number); // [2, test, 7.4, 7, true]
+    */
+    List<int> number = new List();
+    number.add(2);
+    number.add(addNumber(3, 4));
+
+    List<string> str = new List();
+    str.add("test");
+}
+```
+
+# Generic 보충
+- Not use Generic
+```dart
+/**
+ * Not Use Generic
+ */
+class Circle {}
+class Square {}
+class SquareSlot {
+    insert(Square sqareSlot) {
+
+    }
+}
+class CircleSlot{
+    insert(Circle circleSlot) {
+
+    }
+}
+
+void main() {
+    var circleSlot = new CircleSlot();
+    circleSlot.insert(new Circle());
+    var squareSlot = new SquareSlot();
+    squareSlot.insert(new Square());
+}
+```
+<br>
+- Use Generic
+```dart
+    void main() {
+        var circleSlot = new Slot<Circle>();
+        circleSlot.insert(new Circle());
+
+        var squareSlot = new Slot<Square>();
+        squareSlot.insert(new Square());
+
+        var triangleSlot = new Slot<Triangle>();
+        triangleSlot.insert(new Triangle());
+    }
+    class Circle {}
+    class Square {}
+    class Triangle{}
+
+    class Slot<T> {
+        insert (T shape) {
+
+        }
+    }
+```
+- 더 유연하고, 확장성 있음
+
+# ScaffoldMessenger
+- Scaffold.of(context) method
+    - Scaffold.of(context).showSnackBar(SnackBar(...))
+- Why ScaffoldMessenger?
+    - BuildContext and SnackBAr
+        - Scaffold.of(context)는 부모 위젯 중 Scaffold를 찾게 됨.
+        - Scaffold 위젯 내에서 Scaffold.of(context)를 사용하면, 위젯 내이므로, Scaffold를 찾지 못함.
+        - Builder 위젯으로 감싸서 사용해야 했음.
+        - ScaffoldMessager를 사용하면 Scaffold 위젯에서 곧바로 사용 가능.
+- 특정 위젯에서만 Snackbar를 사용하고 싶다.
+    - 특정 위젯에 ScaffoldMessenger 위젯를 최상위로 두고, 하위에 Builder 위젯을 두어 실제 UI를 위젯을 추가한다.
+    - MyPage => ScaffoldMessenger => Scaffold => Builder
+
+# Buttons
+- RaisedButton => ElevatedButton
+- FlatButton => TextButton
+- OutlineButton => OutlinedButton
