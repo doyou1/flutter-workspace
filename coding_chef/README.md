@@ -146,3 +146,10 @@ new Scaffold()
 - Scaffold 위젯은 부모인 MyPage 위젯의 context를 물러받는다.
 <br>
 - MyPage widget build method -> (MyPage context) -> Scaffold Widget
+
+# Scaffold.of(context) method
+- "현재 주어진 context에서 위로 올라가면서 가장 가까운 Scaffold를 찾아서 반환하라."
+
+# Snack bar and Toast message
+1. 빌더 위젯없이 Snack bar 만들기
+2. Toast message 구현하기
