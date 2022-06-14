@@ -116,3 +116,272 @@ void main() {
   print("Fetching user order...");
 }
 ```
+
+# For loop
+1. For loop 구조
+```dart
+void forward(int move) {
+  for(int i=1; i<=move; i++) {
+    print('$i칸 이동했습니다.');
+  }
+}
+forward(5);
+```
+2. For in loop 구조
+```dart
+List<String> rainbow = ["빨","주","노","초","파","남","보"];
+for(String x in rainbow) {
+  print(x);
+}
+```
+3. forEach loop 구조
+```dart
+List<String> rainbow = ["빨","주","노","초","파","남","보"];
+rainbow.forEach((x) {
+  print(x);
+});
+```
+4. for loop, for in loop // lotto
+```dart
+List<int> getLottoNumber() {
+  var random = Random();
+  List<int> lottoList = [];
+  var num;
+  
+  for(int i=0; i<6; i++) {
+    num = random.nextInt(45) + 1;
+    lottoList.add(num);
+  }
+  
+  return lottoList;
+}
+```
+5. Set, while loop // lotto
+```dart
+Set<int> lottoNumber() {
+  final random = Random();
+  final Set<int> lottoSet = {};
+  var num;
+  
+  while(lottoSet.length != 6) {
+    num = random.nextInt(45) + 1;
+    lottoSet.add(num);
+  }
+  
+  return lottoSet;
+}
+```
+
+6. List.generate / for dummy data
+```dart
+void main() {
+  var result = (List<int>.generate(45, (i) => i+1)..shuffle()).subList(0, 6);
+}
+```
+
+# cascade notation
+- The cascade notation (. .) in Dart allows you to make a sequence of operations on the same object (including function calls and field access). This notation helps keep Dart code compact and removes the need to create temporary variables to store data.
+- 다트의 계단식 표기법(. .)을 사용하면 함수 호출 및 필드 액세스를 포함하여 동일한 개체에 대해 일련의 작업을 수행할 수 있습니다. 이 표기법은 다트 코드를 컴팩트하게 유지하는 데 도움이 되며 데이터를 저장하기 위해 임시 변수를 만들 필요가 없습니다.
+```dart
+ eg1
+    ..a = 88
+    ..bSetter(53)
+    ..printValues();
+```
+
+# Thread
+- 프로세스내에서 실행되는 흐름의 단위
+  - Process vs. Program
+    - Photoshop이라는 프로그램은 저장장치에 깔려있을 뿐, 데이터 묶음일 뿐
+    - 사용자가 Photoshop을 실행시키면, 메모리에 올라가 생명을 얻었다. 프로세스가 됐다.
+    - Dart는 싱글 스레드로 운영되는 언어
+  - Event loop
+    - Dart는 싱글쓰레드로 어떻게 동작하는 걸까?
+      - isolate라는 단일 쓰레드와 프로세스가 생성됨
+      1. First In First Out(FIFO) 방식으로 "MicroTask와 Event" 준비
+         - MicroTask란? 이벤트 큐로 넘어가기전에 비동기적으로 잠시 실행되는 테스크
+      2. main함수 실행
+      3. Event loop 실행
+         1. Button tap, Fetching data, Reading files, drawing gesture, Future Stream
+  
+# Future
+1. 다트에 위해서 Future 객체가 내부적인 배열에 등록
+2. Future과 관련해서 실행되어야 하는 코드들이 이벤트 큐에 등록
+3. 불완전한 Future 객체가 반환
+4. Synchronous 방식으로 실행되어야 할 코드 먼저 실행
+5. 최종적으로 실제적인 data 값이 객체로 전달
+```dart
+void main() {
+  print("1");
+  Future(() {
+    print("2");
+  }).then((_) {
+    print("3");
+  });
+  print("4");
+}
+
+// 1
+// 4
+// 2
+// 3
+```
+
+```dart
+void main() async{
+  print("1");
+  await Future(() {
+    print("2");
+  });
+  print("3");
+}
+
+//1
+//2
+//3
+```
+
+```dart
+// Synchronous
+String createOrderMessage() {
+  var order = fetchUserOrder();
+  return "Your order is: $order";
+}
+
+Future<String> fetchUserOrder() {
+  return Future.delayed(
+    Duration(seconds: 2),
+          () => "Large Latte",
+  );
+}
+
+void main() {
+  print("Fetching user order...");
+  print(createOrderMessage());
+}
+
+// Fetching user order...
+// Your order is: Instance of '_Future<String>'
+```
+
+```dart
+// async
+Future<String> createOrderMessage() async {
+  var order = await fetchUserOrder();
+  return "Your order is: $order";
+}
+
+Future<String> fetchUserOrder() {
+  return Future.delayed(
+    Duration(seconds: 2),
+          () => "Large Latte",
+  );
+}
+
+void main() async {
+  print("Fetching user order...");
+  print(await createOrderMessage());
+}
+
+// Fetching user order...
+// (3 second later)
+// Your order is: Large Latte 
+```
+
+- Can you understand it?
+```dart
+void main() async {
+  methodA();
+  await methodB();
+  await methodC("main");
+  methodD();
+}
+
+methodA() {
+  print("A");
+}
+
+methodB() async {
+  print("B start");
+  await methodC("B");
+  print("B end");
+}
+
+methodC(String from) async {
+  print("C start from $from");
+  
+  Future(() {
+    print("C running Future from $from");
+  }).then((_) {
+    print("C end of Future from $from");
+  });
+  
+  print("C end from $from");
+}
+
+methodD() {
+  print("D");
+}
+
+// A
+// B start
+// C start from B
+// C end from B
+// B end
+// C start from main
+// C end from main
+// D
+// C running Future from B
+// C end of Future from B
+// C running Future from main
+// C end of Future from main
+```
+
+```dart
+// methodC에 await 하나 추가
+void main() async {
+  methodA();
+  await methodB();
+  await methodC("main");
+  methodD();
+}
+
+methodA() {
+  print("A");
+}
+
+methodB() async {
+  print("B start");
+  await methodC("B");
+  print("B end");
+}
+
+methodC(String from) async {
+  print("C start from $from");
+
+  await Future(() {
+    print("C running Future from $from");
+  }).then((_) {
+    print("C end of Future from $from");
+  });
+
+  print("C end from $from");
+}
+
+methodD() {
+  print("D");
+}
+
+// A
+// B start
+// C start from B
+// C running Future from B
+// C end of Future from B
+// C end from B
+// B end
+// C start from main
+// C running Future from main
+// C end of Future from main
+// C end from main
+// D
+```
