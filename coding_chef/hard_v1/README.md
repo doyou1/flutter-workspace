@@ -33,3 +33,86 @@
 # State
 - Child 위젯의 생성자를 통해서 데이터가 전달될 때
 - Internal state가 바뀔 때
+
+# If statement
+```
+if(오른쪽 길에 장애물이 있다면) {
+  왼쪽으로 방향을 틀 것
+}
+A==b A!=b A&&b A||b A>b A<b A>=b A<=b
+```
+```dart
+void main() {
+  grade();
+}
+
+void grade() {
+  // 1 ~ 100
+  int score = Random().nextInt(100) + 1;
+  
+  print(score);
+  if(score <= 50) {
+    print("F학점입니다.");
+  } else if(score <= 69) {
+    print("D학점입니다.");
+  } else if(score <= 79) {
+    print("C학점입니다.");
+  } else if(score <= 89) {
+    print("B학점입니다.");
+  } else {
+    print("A학점입니다.");
+  }
+}
+```
+
+# Focus
+- FocusNode: 포커스를 받는 특정 위젯을 식별
+- FocusScope: 어떤 위젯들까지 포커스를 받는지 범위를 나타냄
+- FocusScope.of(context).unfocus(); : 외부 클릭시, keyboard hide
+
+
+
+# const & final
+```dart
+void main() {
+  final int myFinal = 30;
+  const int myConst = 70;
+  
+  // immutable, 수정불가
+  myFinal = 20; // compile error
+  myConst = 50; // compile error
+}
+```
+- final
+```dart
+// final 변수는 생성자에서 초기화하는 건 가능
+class Person{
+  final int age;
+  String name;
+  Person(this.age, this.name);
+}
+
+void main() {
+  Person p1 = new Person(21, "Tom");
+  print(p1.age);
+}
+```
+<br>
+- compile-time constant는 컴파일 시에 상수가 됨
+- const 변수는 선언과 동시에 초기화
+- const 변수는 컴파일 시에 상수화
+- final 변수는 런타임 시에 상수화
+- Compile-time constant = Run-time constant
+- final 변수는 rebuild 될 수 있음
+
+# future, async, await
+```dart
+Future<void> fetchUserOrder() {
+  return Future.delayed(Duration(seconds: 2), () => print("Large Latter"));
+}
+
+void main() {
+  fetchUserOrder();
+  print("Fetching user order...");
+}
+```
