@@ -385,3 +385,191 @@ methodD() {
 // C end from main
 // D
 ```
+
+# Is Google's flutter the future for apps? Or killed by Google?
+  - 구글이 폐가힌 227개의 product는 모두 생산성을 담당
+  - 지금도 flutter는 전 세계적으로 사용되고 있음
+  - 구글이 폐기하려고 하는 프레임워크는 Angularjs 1.x 버전
+  - 구글에게 있어서 Fuchsia와 Flutter의 의미
+
+# 1_Null safety in Flutter
+- Null : 아직 값이 정해지지 않은 것
+- Dart는 Type Safe Language
+```dart
+class Person {
+  속성(변수)
+  기능(메서드)
+}
+```
+- 예) class는 한 객체의 속성과 기능을 정의한다.
+```dart
+int age = null;
+```
+- int 변수은 변수가 숫자에 대한 정보를 가지고, 연산을 수행한다.
+- 그런데 int 변수에 null이 들어가면 연산을 수행할 수 없다.
+- null이 프로그램에 문제를 일으킬 수 있지만, 정말 필요한 개념이기도 하다.
+  - Food favorite = null에서 null은 favorite food가 없다는 것을 의미한다.
+  - 그런데, 이후 프로세스에서 favorite의 값이 null에서 바뀌지 않는다면, 문제가 생긴다.
+  ```dart
+  void whatIsYourFood(Food f) {
+    String cooker = f.recipe.toString();
+    print(cooker);
+  }
+  Food favorite = null;
+  whatIsYourFood(favorite); // NullPointException
+  ```
+  - Null일 수 있는 상황에서 항상 걸려주는 코드를 집어넣어야하는데, 이는 개발자의 실수가 들어갈 수 있고, 코드가 지저분해짐
+  - 이를 해결하기 위해서 ***Null Safety***
+
+# 2_Null safety in Flutter
+1. 모든 변수는 null이 될 수 없으며, non-nullable 변수에는 null 값을 할당할 수 없음
+```dart
+// Null Safety가 적용된다면,
+void main() {
+  String name;    // compile error
+  int age = null; // compile error
+  print(name);  // compile error
+  print(age);   // compile error
+}
+```
+2. non-nullable 변수를 위한 null check가 필요 없음
+```dart
+// Null Safety가 적용된다면,
+int number = 4;
+
+void main() {
+  if(number == null) return;  // 해당 조건문은 필요없습니다.
+  
+  int sum = number + 5;
+  print(sum);
+}
+```
+3. ***Class 내의 변수는*** 반드시 선언과 동시에 초기화를 시켜야 함
+```dart
+class Person {
+  int name; // compile error
+}
+```
+- 아래 코드에서 NullPointerException이 발생하는 이유를 찾아보시오.
+```dart
+// Null Safety 미적용
+class Person {
+  String name;
+  
+  String nameChange(String name) {
+    this.name = name;
+    return name.toUpperCase();
+  }
+}
+
+void main() {
+  Person p = Person();
+  // p.name = "doyou";
+  print(p.nameChange(p.name));
+}
+```
+
+- exception을 해결하기 위해선
+```dart
+class Person {
+  String name;
+  
+  String nameChange(String name) {
+    this.name = name;
+    return name.toUpperCase();
+  }
+}
+
+void main() {
+  Person p = Person();
+  if(p.name == null) {
+    print("need a name");
+  } else {
+    print(p.nameChange(p.name));
+  }
+}
+```
+
+- Null Safety를 사용한다면? 아래와 같이 작성할 수 있다.
+```dart
+class Person {
+  String name;
+  
+  Person(String name) {
+    this.name = name;
+  }
+  
+  String nameChange(String name) {
+    this.name = name;
+    return name.toUpperCase();
+  }
+}
+void main() {
+  Person p = Person("doyou");
+  print(p.nameChange(p.name));
+}
+```
+
+- Null Safety를 사용한다면? 아래와 같이 작성할 수 있다.
+```dart
+class Person {
+  String? name;
+  
+  String nameChange(String? name) {
+    this.name = name;
+    if(name == null) {
+      return "need a name";
+    } else {
+      return name.toUpperCase();
+    }
+  }
+}
+void main() {
+  Person p = Person();
+  print(p.nameChange(p.name));
+}
+```
+
+- Null Safety를 사용한다면? 아래와 같이 작성할 수 있다.
+```dart
+class Person {
+  late int age;
+  
+  int sum(int age, int num) {
+    this.age = age;
+    int total = age + num;
+    return total + age;
+  }
+}
+void main() {
+  Person p = Person();
+  print(p.sum(100, 50));
+}
+```
+  - late 예약어는 해당 변수가 class의 생성과 동시에 초기화되지 않음을 의미함
+
+- late 변수
+```dart
+class Person {
+  late int age = calculation();
+  
+  void printAge() {
+    print("age");
+  }
+}
+
+int calculation() {
+  print("calculate");
+  return 30;
+}
+
+void main() {
+  Person p = Person();
+  p.printAge();
+  print(p.age);
+}
+
+// age
+// calculate
+// 30
+``` 
