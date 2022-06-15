@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:weather_app/services/location_service.dart';
 import 'package:weather_app/services/network_service.dart';
@@ -18,6 +19,13 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    goToWeatherScreen();
+  }
 
   void goToWeatherScreen() async {
     LocationService locationService = LocationService();
@@ -51,26 +59,12 @@ class _LoadingState extends State<Loading> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
+      backgroundColor: Colors.amber,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                goToWeatherScreen();
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
-              ),
-              child: const Text(
-                "Get Weather & Go to WeatherScreen",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
+        child: SpinKitDoubleBounce(
+          color: Colors.white,
+          size: 80.0,
         ),
       ),
     );
