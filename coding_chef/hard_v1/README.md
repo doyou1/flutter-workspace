@@ -573,3 +573,16 @@ void main() {
 // calculate
 // 30
 ``` 
+
+# Widget lifecycle
+- Stateless widget
+  - 한번 생성되면 절대 바뀌지 않는다.
+  - 바꾸고싶다면, destory => rebuild
+  - 우리는 build 메서드만 신경쓰면 된다.
+- Stateful widget
+  - 위젯내의 구성요소들 계속 추적하면서 변화에 반응한다.
+  - 변화에 반응하기 위한 생명주기 method가 있다...!
+  - initState method
+  - build method
+  - dispose method, deactivate method
+  - 
