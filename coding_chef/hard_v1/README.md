@@ -585,4 +585,52 @@ void main() {
   - initState method
   - build method
   - dispose method, deactivate method
-  - 
+
+# API
+- 일련의 표준화된 명령이나 기능
+  - appBar, backgroundColor, textStyle...
+- 외부 시스템과 상호작용을 할 수 있도록하는 "매개 역할자"로서의 API
+
+# try-catch / Exception handling
+try {
+  실행에 실패할 수도 있는 코드
+} catch(e) {
+  코드 실행에 실패할 경우 출력될 내용(예외처리 구문)
+}
+
+# JSON format
+- JSON vs XML
+  - API 공급자들은 요청에 대해서 보통 JSON, XML의 형태로 응답을 한다.
+  - 요즘은 JSON을 많이 쓴다.
+  - XML: eXtensible Markup Language
+  - JSON : JavaScript Object Notation
+
+# Keys
+- What are the keys?
+  1. 위젯의 State를 보존
+  2. 위젯이나 요소들을 유니크하게 식별
+- State란 UI가 변경되도록 영향을 미치는 데이터이다.
+- StatefulWidget에서 if, insert, remove 등으로 동일한 타입의 위젯이 추가, 삭제되는 경우
+  - 플러터는 위젯의 타입만을 확인하기때문에, 값이 남은 위젯에게 덮어씌워지는 등 오류가 발생할 수 있다.
+  - 이 경우, key를 통해 위젯들의 고유성을 담보할 수 있다.
+- 정리
+  1. Flutter는 기본적으로 위젯의 타입으로 위젯을 식별
+  2. Statefule 위젯의 식별을 위해서는 Key가 필요
+  3. Value key는 value값을 가지는 Stateful 위젯에 사용
+
+# What is the "Global key"?
+- A key that is unique across the entire app. Global keys uniquely identify elements. Global keys provide access to other objects that are associated with those elements, such as BuildContext. For StatefulWidgets, global keys also provide access to State.
+- - 전체 앱에서 고유한 키입니다. 글로벌 키는 요소를 고유하게 식별합니다. 글로벌 키를 사용하면 BuildContext와 같은 해당 요소와 연결된 다른 개체에 액세스할 수 있습니다. StatefulWidget의 경우 글로벌 키는 State 액세스 권한도 제공합니다.
+```dart
+final globalKey = GlobalKey<_ChildStatefulWidget>();
+.
+.
+.
+return ChildStatefulWidget(
+        key: globalKey,
+        );
+.
+.
+.
+print(globalKey.currentState.name); // 접근가능
+```
