@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_chat/views/chat_bubble.dart';
+import 'package:firebase_chat/views/chat_bubbles.dart';
 import 'package:flutter/material.dart';
 
 class Message extends StatelessWidget {
@@ -29,8 +29,12 @@ class Message extends StatelessWidget {
           reverse: true,
           itemCount: snapshot.data!.docs.length,
           itemBuilder: (context, index) {
-            return ChatBubble(chatDocs[index]["text"],
-                chatDocs[index]["userID"].toString() == user!.uid);
+            return ChatBubbles(
+                chatDocs[index]["text"],
+                chatDocs[index]["userID"].toString() == user!.uid,
+                chatDocs[index]["userName"],
+                chatDocs[index]["userImage"],
+            );
           },
         );
       },

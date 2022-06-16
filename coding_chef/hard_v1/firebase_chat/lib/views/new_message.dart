@@ -15,12 +15,15 @@ class _NewMessageState extends State<NewMessage> {
   final user = FirebaseAuth.instance.currentUser;
 
   var _userEnterMessage = "";
-  void _sendMessage() {
+  void _sendMessage() async {
     FocusScope.of(context).unfocus();
+    final userData = await FirebaseFirestore.instance.collection("user").doc(user!.uid).get();
     FirebaseFirestore.instance.collection("chat").add({
       "text": _userEnterMessage,
       "time": Timestamp.now(),
       "userID": user!.uid,
+      "userName": userData.data()!["userName"],
+      "userImage": userData.data()!["picked_image"],
     });
     _controller.clear();
   }
@@ -32,25 +35,29 @@ class _NewMessageState extends State<NewMessage> {
       padding: const EdgeInsets.all(
         80,
       ),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: TextField(
-              maxLines: null,   // 자동줄바꿈
-              controller: _controller,
-              decoration: const InputDecoration(
-                labelText: "Send a message...",
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  maxLines: null,   // 자동줄바꿈
+                  controller: _controller,
+                  decoration: const InputDecoration(
+                    labelText: "Send a message...",
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _userEnterMessage = value;
+                    });
+                  },
+                ),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _userEnterMessage = value;
-                });
-              },
-            ),
-          ),
-          IconButton(
-            onPressed: _userEnterMessage.trim().isEmpty ? null : _sendMessage,
-            icon: const Icon(Icons.send),
+              IconButton(
+                onPressed: _userEnterMessage.trim().isEmpty ? null : _sendMessage,
+                icon: const Icon(Icons.send),
+              ),
+            ],
           ),
         ],
       ),

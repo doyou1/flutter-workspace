@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_chat/util/palette.dart';
-import 'package:firebase_chat/views/chat.dart';
+import 'package:firebase_chat/views/add_image.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class LoginSignUpView extends StatefulWidget {
@@ -23,6 +26,11 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
   String userName = "";
   String userEmail = "";
   String userPassword = "";
+  File? userPickedImage;
+
+  void pickedImage(File image) {
+    userPickedImage = image;
+  }
 
   void _tryValidation() {
     final isValid = _formKey.currentState!.validate();
@@ -30,6 +38,17 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
     if (isValid) {
       _formKey.currentState!.save();
     }
+  }
+
+  void showAlert(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            backgroundColor: Colors.white,
+            child: AddImage(pickedImage),
+          );
+        });
   }
 
   @override
@@ -72,7 +91,8 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                             ),
                             children: [
                               TextSpan(
-                                text: isSignUpView ? " to Doyou chat!" : " Back!",
+                                text:
+                                isSignUpView ? " to Doyou chat!" : " Back!",
                                 style: const TextStyle(
                                   letterSpacing: 1.0,
                                   fontSize: 25,
@@ -109,7 +129,10 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.easeIn,
                   padding: const EdgeInsets.all(20.0),
-                  width: MediaQuery.of(context).size.width - 40,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width - 40,
                   height: isSignUpView ? 280 : 250,
                   margin: const EdgeInsets.symmetric(horizontal: 20.0),
                   decoration: BoxDecoration(
@@ -165,18 +188,37 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                               },
                               child: Column(
                                 children: [
-                                  Text(
-                                    "SIGNUP",
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: isSignUpView
-                                          ? Palette.activeColor
-                                          : Palette.textColor1,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "SIGNUP",
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: isSignUpView
+                                              ? Palette.activeColor
+                                              : Palette.textColor1,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 15,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          showAlert(context);
+                                        },
+                                        child: Icon(
+                                          Icons.image,
+                                          color: isSignUpView
+                                              ? Colors.cyan
+                                              : Colors.grey[300],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   Container(
-                                    margin: const EdgeInsets.only(top: 3),
+                                    margin:
+                                    const EdgeInsets.fromLTRB(0, 3, 35, 0),
                                     height: 2,
                                     width: 55,
                                     color: Colors.orange,
@@ -472,9 +514,24 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                     ),
                     child: GestureDetector(
                       onTap: () async {
-                        setState((){
+                        setState(() {
                           showSpinner = true;
                         });
+
+                        print("userPickedImage: $userPickedImage");
+                        if (userPickedImage == null) {
+                          showSpinner = false;
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  "Please pick you image"),
+                              backgroundColor: Colors.blue,
+                            ),
+                          );
+                          return;
+                        }
+
                         _tryValidation();
                         if (isSignUpView) {
                           // 회원가입
@@ -485,13 +542,26 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                               password: userPassword,
                             );
 
-                            await FirebaseFirestore.instance.collection("user").doc(newUser.user!.uid).set({
+                            final refImage = FirebaseStorage.instance
+                                .ref()
+                                .child("picked_image")
+                                .child(newUser.user!.uid + ".png");
+
+                            await refImage.putFile(userPickedImage!);
+
+                            final url = await refImage.getDownloadURL();
+
+                            await FirebaseFirestore.instance
+                                .collection("user")
+                                .doc(newUser.user!.uid)
+                                .set({
                               "userName": userName,
                               "email": userEmail,
+                              "picked_image": url,
                             });
 
                             if (newUser.user != null) {
-                              if(!mounted) return ;
+                              if (!mounted) return;
                               // Navigator.push(
                               //   context,
                               //   MaterialPageRoute(
@@ -508,8 +578,8 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                             print("exception: $e");
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content:
-                                    Text("Please check your email and password"),
+                                content: Text(
+                                    "Please check your email and password"),
                                 backgroundColor: Colors.blue,
                               ),
                             );
@@ -517,8 +587,7 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                               showSpinner = false;
                             });
                           }
-                        }
-                        else {
+                        } else {
                           try {
                             final loginUser = await _authentication
                                 .signInWithEmailAndPassword(
@@ -527,7 +596,7 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                             );
 
                             if (loginUser.user != null) {
-                              if(!mounted) return ;
+                              if (!mounted) return;
                               // Navigator.push(
                               //   context,
                               //   MaterialPageRoute(
@@ -540,12 +609,12 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                                 showSpinner = false;
                               });
                             }
-                          } catch(e) {
+                          } catch (e) {
                             print("exception: $e");
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content:
-                                Text("Please check your email and password"),
+                                content: Text(
+                                    "Please check your email and password"),
                                 backgroundColor: Colors.blue,
                               ),
                             );
@@ -589,8 +658,14 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.easeIn,
                 top: isSignUpView
-                    ? MediaQuery.of(context).size.height - 125
-                    : MediaQuery.of(context).size.height - 165,
+                    ? MediaQuery
+                    .of(context)
+                    .size
+                    .height - 125
+                    : MediaQuery
+                    .of(context)
+                    .size
+                    .height - 165,
                 right: 0,
                 left: 0,
                 child: Column(
