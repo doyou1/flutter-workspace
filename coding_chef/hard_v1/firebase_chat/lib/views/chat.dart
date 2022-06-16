@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_chat/views/message.dart';
+import 'package:firebase_chat/views/new_message.dart';
 import 'package:flutter/material.dart';
 
 class ChatView extends StatefulWidget {
@@ -10,6 +13,9 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   final _authentication = FirebaseAuth.instance;
+  List<String> chats = [];
+
+  // final _fireStore = ;
   User? loggedUser;
 
   void getCurrentUser() {
@@ -43,14 +49,20 @@ class _ChatViewState extends State<ChatView> {
             ),
             onPressed: () {
               _authentication.signOut();
-              Navigator.pop(context);
+              // Navigator.pop(context);
             },
-
           )
         ],
       ),
-      body: Center(
-        child: Text("${loggedUser?.email}"),
+      body: Container(
+        child: Column(
+          children: const [
+            Expanded(
+              child: Message(),
+            ),
+            NewMessage(),
+          ],
+        ),
       ),
     );
   }
