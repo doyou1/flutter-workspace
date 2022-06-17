@@ -15,7 +15,15 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+
+    // Creates a widget that builds itself based on the latest snapshot of interaction with a Future.
+    // The builder must not be null.
+    // Future와의 상호 작용에 대한 최신 스냅샷을 기반으로 자체적으로 빌드되는 위젯을 만듭니다.
+    // 빌더는 null이 아니어야 합니다.
     return FutureBuilder(
+      // Initializes a new FirebaseApp instance by name and options and returns the created app.
+      // This method should be called before any usage of FlutterFire plugins
+      // FlutterFire를 사용하기 전에 호출해야 합니다.
       future: Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       ),
@@ -33,9 +41,19 @@ class MyApp extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
             title: "Firebase Chat",
+            // Creates a new StreamBuilder that builds itself based on the latest snapshot of interaction with the specified stream and whose build strategy is given by builder.
+            // The initialData is used to create the initial snapshot.
+            // The builder must not be null.
+            // 지정된 스트림과의 상호 작용에 대한 최신 스냅샷을 기반으로 자체적으로 빌드되고 해당 빌드 전략이 빌더에서 제공되는 새 StreamBuilder를 만듭니다.
+            // initialData는 초기 스냅샷을 만드는 데 사용됩니다.
+            // 빌더는 null이 아니어야 합니다.
             home: StreamBuilder(
+              // Notifies about changes to the user's sign-in state (such as sign-in or sign-out)
+              // 유저의 로그인, 로그아웃 등 변화를 알아챕니다.
+              // 아마 확인해서 로그인 하고
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
+                print("snapshot: ${snapshot.data.toString()}");
                 if(snapshot.hasData) {
                   return ChatView();
                 } else {
