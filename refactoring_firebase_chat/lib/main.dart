@@ -1,50 +1,48 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:refactoring_firebase_chat/screen/login_screen.dart';
+import 'package:refactoring_firebase_chat/screen/main_screen.dart';
 
-void main() {
-  var path = Directory.current.path;
-  Hive.init(path);
-  runApp(const SplashApp());
+void main() async {
+  await Hive.initFlutter();
+  runApp(const SplashScreen());
 }
 
-class SplashApp extends StatelessWidget {
-  const SplashApp({Key? key}) : super(key: key);
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: fakeFirebaseInit(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done &&
-            snapshot.data != null) {
-          String data = snapshot.data as String;
-          return MaterialApp(
-            title: "Refactoring",
-            home: Center(
-              child: Text("data: $data"),
-            ),
-          );
-        }
+    return MaterialApp(
+      title: "Refactoring",
+      home: Scaffold(
+        body: FutureBuilder(
+          future: fakeFirebaseInit(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.data == null) {
+                return LoginScreen();
+              } else {
+                return MainScreen();
+              }
+            }
 
-        return MaterialApp(
-          home: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+      ),
     );
   }
 }
 
-Future<String> fakeFirebaseInit() async {
-  var isLogin = await Hive.openBox("currentUser");
-  print("isLogin: $isLogin")                                      ;
-  var user = await isLogin.get("user");
+Future<dynamic> fakeFirebaseInit() async {
+  var box = await Hive.openBox("currentUser");
+  var user = await box.get("user");
 
-  print("user: ${user.toString()}");                                          
-  await Future.delayed(Duration(seconds: 3), () {});
-  return "done";
+  // await Future.delayed(Duration(seconds: 3), () {});
+  return user;
+  // return "not null";
 }
-
