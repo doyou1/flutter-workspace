@@ -16,3 +16,8 @@ const String IS_SAVE_ID_TEXT = "Remember me";
 const String LOGIN_TEXT = "SignIn";
 const String SIGNUP_TEXT = "SignUp";
 const String FIND_ID_PASSWORD_TEXT = "Forgot email/password?";
+
+const String ID_FAIL_VALIDATE_NOTI_TEXT = "Please enter a valid email address.";
+const String PASSWORD_FAIL_VALIDATE_NOTI_TEXT = "Please enter at least 6 characters";
+
+const int PASSWORD_LENGTH_LIMIT = 6;

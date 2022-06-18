@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:refactoring_firebase_chat/vo/login_user_vo.dart';
 
 import 'google_login_screen.dart';
 import 'login_form_screen.dart';
@@ -12,9 +13,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  // 유효성 검사 통과후, 로그인 처리
-  void loginProcess() {
-    print("로그인");
+  // 유효성 검사 통과후, 통과한 loginUser 데이터를 통해 로그인 시도
+  void loginProcess(LoginUserVo loginUser) {
+    // print("loginUser: ${loginUser.userId}");
+    // print("loginUser: ${loginUser.userPassword}");
+    // print("loginUser: ${loginUser.isSaveId}");
   }
 
   // 입력 중 다른 위젯 클릭시 키보드 비표시

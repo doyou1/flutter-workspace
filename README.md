@@ -13,3 +13,5 @@
 
 - Flutter MVVM
   - 공부해야한다, 리팩토링을 위해서
+
+- Container vs SizedBox
