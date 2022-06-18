@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+// 회원가입 및 로그인화면
 class LoginSignUpView extends StatefulWidget {
   const LoginSignUpView({Key? key}) : super(key: key);
 
@@ -18,20 +19,26 @@ class LoginSignUpView extends StatefulWidget {
 class _LoginSignUpViewState extends State<LoginSignUpView> {
   final _authentication = FirebaseAuth.instance;
 
+  // 회원가입과 로그인 토글 플래글
   bool isSignUpView = true;
+  // 로그인 및 회원가입시 await 화면
   bool showSpinner = false;
 
+  // TextFormField validation을 위한 globalkey
   final _formKey = GlobalKey<FormState>();
 
+  // textformfield value를 담는 변수
   String userName = "";
   String userEmail = "";
   String userPassword = "";
   File? userPickedImage;
 
+  // 카메라로부터의 이미지 파일 데이터 담는 함수
   void pickedImage(File image) {
     userPickedImage = image;
   }
 
+  // 전송버튼 클릭시 validation 담당 함수
   void _tryValidation() {
     final isValid = _formKey.currentState!.validate();
 
@@ -40,6 +47,7 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
     }
   }
 
+  // pick image를 위한 다이얼로그 함수
   void showAlert(BuildContext context) {
     showDialog(
         context: context,
@@ -55,6 +63,8 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Palette.backgroundColor,
+      // A Widget which should be the the widget to be shown behind the loading barrier
+      // 로딩 배리어 뒤에 표시될 위젯이어야 하는 위젯
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: GestureDetector(
@@ -63,7 +73,7 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
           },
           child: Stack(
             children: [
-              // 배경
+              // 윗 배경 위젯
               Positioned(
                 top: 0,
                 left: 0,
@@ -120,7 +130,7 @@ class _LoginSignUpViewState extends State<LoginSignUpView> {
                   ),
                 ),
               ),
-              // 텍스트폼
+              // 텍스트폼 위젯
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.easeIn,

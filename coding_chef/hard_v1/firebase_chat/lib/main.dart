@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         }
 
         // Once complete, show your application
-        if (snapshot.connectionState == ConnectionState.done) {
+        if (snapshot.connectionState == ConnectionState.done) { // 1. firebase auth와 연결이 됐다면
           return MaterialApp(
             title: "Firebase Chat",
             // Creates a new StreamBuilder that builds itself based on the latest snapshot of interaction with the specified stream and whose build strategy is given by builder.
@@ -54,10 +54,10 @@ class MyApp extends StatelessWidget {
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
                 print("snapshot: ${snapshot.data.toString()}");
-                if(snapshot.hasData) {
-                  return ChatView();
-                } else {
-                  return LoginSignUpView();
+                if(snapshot.hasData) {  // 로그인을 기존에 했다면
+                  return ChatView();  // 채팅화면, 메인화면
+                } else {              // 로그아웃 혹은 로그인이 돼있지않다면
+                  return LoginSignUpView();  // 로그인 및 회원가입 화면
                 }
               },
             ),
