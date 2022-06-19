@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:refactoring_firebase_chat/util/const.dart';
 import 'package:refactoring_firebase_chat/vo/login_user_vo.dart';
 
@@ -24,6 +25,8 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
   final _loginFormKey = GlobalKey<FormState>();
   // 정사각형 seb widget, dialog를 위한 width, height size 변수
   late double subWidgetSize;
+  late String? savedId;
+
   // 보여질 Dialog 변수
   Widget targetDialog = const Center(
     child: Text("empty"),
@@ -33,61 +36,11 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
   // 아이디 기억 여부 플래그(로그인시 Hive 저장 필요)
   bool isSaveId = false;
 
-  // onChanged, onSaved in 'TextFormField'
-  void _setValue(int flag, String? value) {
-    switch (flag) {
-      case UNIQUE_KEY_BY_ID:
-        loginUser.userId = value;
-        break;
-      case UNIQUE_KEY_BY_PASSWORD:
-        loginUser.userPassword = value;
-        break;
-    }
-  }
+  final TextEditingController _idController = TextEditingController();
 
-  // 클릭한 버튼에 따라 다이얼로그 표시
-  // onTap in 'Signup', '아이디 비밀번호 찾기'
-  void _showDialog(int flag) {
-    switch (flag) {
-      case UNIQUE_KEY_BY_SIGNUP:
-        targetDialog = const SignupDialog();
-        break;
-      case UNIQUE_KEY_BY_FIND_ID_PASSWORD:
-        targetDialog = const FindIdPasswordDialog();
-        break;
-    }
-
-    // 선택한 Dialog 표시
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.blue,
-          // child: SignupDialog(),
-          child: Container(
-            width: subWidgetSize,
-            height: subWidgetSize,
-            child: targetDialog,
-          ),
-        );
-      },
-    );
-  }
-
-  // bool flag 토글
-  // onTap 'checkbox', 'password visible button'
-  void _toggleBoolFlagValue(int intFlag) {
-    setState(() {
-      switch (intFlag) {
-        case UNIQUE_KEY_BY_PASSWORD:
-          isVisiblePassword = !isVisiblePassword;
-          break;
-
-        case UNIQUE_KEY_BY_IS_SAVE_ID:
-          isSaveId = !isSaveId;
-          break;
-      }
-    });
+  @override
+  void initState() {
+    super.initState();
   }
 
   // onTap in 'Signin'
@@ -98,44 +51,11 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
     }
   }
 
-  // TextFormField 유효성 검사
-  // _isAbleLoginProcess 내부 호출 함수 (onTap in 'Signin')
-  bool _isValidateForm() {
-    var currentState = _loginFormKey.currentState;
-    final isValid = currentState != null ? currentState.validate() : false;
-
-    if (isValid) {
-      currentState.save();
-    }
-
-    // 모든 유효성검사 완료시 로그인 처리
-    return isValid;
-  }
-
-  // 특정 TextFormField 유효성검사 및 유효성 실패 알림
-  // validator in 'TextFormField'
-  String? _isValidateTextFormField(int flag, String? value) {
-    if (value != null) {
-      switch (flag) {
-        case UNIQUE_KEY_BY_ID:
-          if (value.isEmpty || !value.contains("@")) {
-            return ID_FAIL_VALIDATE_NOTI_TEXT;
-          }
-          break;
-        case UNIQUE_KEY_BY_PASSWORD:
-          if (value.isEmpty || value.length < PASSWORD_LENGTH_LIMIT) {
-            return PASSWORD_FAIL_VALIDATE_NOTI_TEXT;
-          }
-          break;
-      }
-    }
-    return null;
-  }
-
-
   @override
   Widget build(BuildContext context) {
     subWidgetSize = MediaQuery.of(context).size.width * WIDGET_SIZE_RATIO;
+    // Hive 저장된 기존 데이터 set
+    _getSavedId();
 
     return Container(
       width: subWidgetSize,
@@ -152,6 +72,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                 TextFormField(
                   key: const ValueKey(UNIQUE_KEY_BY_ID),
                   keyboardType: TextInputType.emailAddress,
+                  controller: _idController,
                   validator: (value) {
                     return _isValidateTextFormField(UNIQUE_KEY_BY_ID, value);
                   },
@@ -320,4 +241,109 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
       ),
     );
   }
+
+  Future<void> _getSavedId() async {
+    var box = await Hive.openBox(SAVE_ID_TEXT);
+    String savedId = box.get(SAVE_ID_TEXT);
+    bool isSaveId = box.get(IS_SAVE_ID);
+
+    if(isSaveId) {
+      _idController.text = savedId;
+    }
+    if(!mounted) return ;
+    setState(() {
+      this.isSaveId = isSaveId;
+    });
+  }
+  // TextFormField 유효성 검사
+  // _isAbleLoginProcess 내부 호출 함수 (onTap in 'Signin')
+  bool _isValidateForm() {
+    var currentState = _loginFormKey.currentState;
+    final isValid = currentState != null ? currentState.validate() : false;
+
+    if (isValid) {
+      currentState.save();
+    }
+
+    // 모든 유효성검사 완료시 로그인 처리
+    return isValid;
+  }
+
+  // 특정 TextFormField 유효성검사 및 유효성 실패 알림
+  // validator in 'TextFormField'
+  String? _isValidateTextFormField(int flag, String? value) {
+    if (value != null) {
+      switch (flag) {
+        case UNIQUE_KEY_BY_ID:
+          if (value.isEmpty || !value.contains("@")) {
+            return ID_FAIL_VALIDATE_NOTI_TEXT;
+          }
+          break;
+        case UNIQUE_KEY_BY_PASSWORD:
+          if (value.isEmpty || value.length < PASSWORD_LENGTH_LIMIT) {
+            return PASSWORD_FAIL_VALIDATE_NOTI_TEXT;
+          }
+          break;
+      }
+    }
+    return null;
+  }
+
+  // onChanged, onSaved in 'TextFormField'
+  void _setValue(int flag, String? value) {
+    switch (flag) {
+      case UNIQUE_KEY_BY_ID:
+        loginUser.userId = value;
+        break;
+      case UNIQUE_KEY_BY_PASSWORD:
+        loginUser.userPassword = value;
+        break;
+    }
+  }
+
+  // 클릭한 버튼에 따라 다이얼로그 표시
+  // onTap in 'Signup', '아이디 비밀번호 찾기'
+  void _showDialog(int flag) {
+    switch (flag) {
+      case UNIQUE_KEY_BY_SIGNUP:
+        targetDialog = const SignupDialog();
+        break;
+      case UNIQUE_KEY_BY_FIND_ID_PASSWORD:
+        targetDialog = const FindIdPasswordDialog();
+        break;
+    }
+
+    // 선택한 Dialog 표시
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.blue,
+          // child: SignupDialog(),
+          child: Container(
+            width: subWidgetSize,
+            height: subWidgetSize,
+            child: targetDialog,
+          ),
+        );
+      },
+    );
+  }
+
+  // bool flag 토글
+  // onTap 'checkbox', 'password visible button'
+  void _toggleBoolFlagValue(int intFlag) {
+    setState(() {
+      switch (intFlag) {
+        case UNIQUE_KEY_BY_PASSWORD:
+          isVisiblePassword = !isVisiblePassword;
+          break;
+
+        case UNIQUE_KEY_BY_IS_SAVE_ID:
+          isSaveId = !isSaveId;
+          break;
+      }
+    });
+  }
+
 }
