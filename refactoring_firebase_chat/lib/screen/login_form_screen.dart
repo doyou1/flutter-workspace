@@ -38,11 +38,6 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
 
   final TextEditingController _idController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   // onTap in 'Signin'
   void _isAbleLoginProcess() {
     if(_isValidateForm()) {
@@ -244,16 +239,20 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
 
   Future<void> _getSavedId() async {
     var box = await Hive.openBox(SAVE_ID_TEXT);
-    String savedId = box.get(SAVE_ID_TEXT);
-    bool isSaveId = box.get(IS_SAVE_ID);
+    String? savedId = box.get(SAVE_ID_TEXT);
+    bool? isSaveId = box.get(IS_SAVE_ID);
 
-    if(isSaveId) {
+    if(isSaveId != null && isSaveId && savedId != null) {
       _idController.text = savedId;
     }
     if(!mounted) return ;
-    setState(() {
-      this.isSaveId = isSaveId;
-    });
+    else {
+      if(isSaveId != null) {
+        setState(() {
+          this.isSaveId = isSaveId;
+        });
+      }
+    }
   }
   // TextFormField 유효성 검사
   // _isAbleLoginProcess 내부 호출 함수 (onTap in 'Signin')
