@@ -131,7 +131,7 @@ class LoginFormView extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      _isAbleLoginProcess(context);
+                      controller.isAbleLoginProcess();
                     },
                     child: const Text(
                       LOGIN_TEXT,
@@ -226,56 +226,5 @@ class LoginFormView extends StatelessWidget {
         );
       },
     );
-  }
-
-  // onTap in 'Signin'
-  Future<void> _isAbleLoginProcess(BuildContext context) async {
-    if (controller.isValidateForm()) {
-      controller.viewModel.update((val) {
-        val?.isShowSpinner = true;
-      });
-
-      try {
-        int? flag = await controller.loginProcess();
-        controller.viewModel.update((val) {
-          val?.isShowSpinner = false;
-        });
-
-        if (flag != null) {
-          // 로그인 실패
-          showSnackBar(flag);
-        } else {
-          // 로그인 성공
-
-        }
-      } catch (e) {
-        controller.viewModel.update((val) {
-          val?.isShowSpinner = false;
-        });
-        showSnackBar(UNIQUE_KEY_BY_FAIL_LOGIN);
-      }
-    }
-  }
-
-  void showSnackBar(int flag) {
-    String? title;
-    String? text;
-    switch (flag) {
-      case UNIQUE_KEY_BY_FAIL_LOGIN:
-        title = LOGIN_FAIL_NOTI_TITLE;
-        text = LOGIN_FAIL_NOTI_TEXT;
-    }
-
-    if (title != null && text != null) {
-      Get.snackbar(
-        title,
-        text,
-        backgroundColor: Colors.blue,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        forwardAnimationCurve: Curves.elasticInOut,
-        reverseAnimationCurve: Curves.easeOut,
-      );
-    }
   }
 }

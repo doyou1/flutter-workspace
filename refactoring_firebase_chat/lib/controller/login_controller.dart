@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -30,13 +32,13 @@ class LoginController extends GetxController {
   Future<int?> loginProcess() async {
       // signIn
       await Future.delayed(Duration(seconds: 1,), () {});
-      // final bool isSuccess = (Random().nextInt(10) + 1) >= 5 ? true : false;
-      final bool isSuccess = true;
+      final bool isSuccess = (Random().nextInt(10) + 1) >= 5 ? true : false;
+      // final bool isSuccess = true;
       // final bool isSuccess = false;
 
       if(isSuccess) { // 로그인 성공
         saveIdProcess();
-        return null;
+        return UNIQUE_KEY_BY_SUCCESS_LOGIN;
 
       } else { // 로그인 실패
         return UNIQUE_KEY_BY_FAIL_LOGIN;
@@ -178,4 +180,59 @@ class LoginController extends GetxController {
     }
   }
 
+  // onTap in 'Signin'
+  Future<void> isAbleLoginProcess() async {
+    if (isValidateForm()) {
+      viewModel.update((val) {
+        val?.isShowSpinner = true;
+      });
+
+      try {
+        int? flag = await loginProcess();
+        viewModel.update((val) {
+          val?.isShowSpinner = false;
+        });
+
+        if (flag != null) { // 둘다 flag로 처리
+          // 로그인 실패
+          showSnackBar(flag);
+        } else {
+          // 로그인 성공
+        }
+      } catch (e) {
+        viewModel.update((val) {
+          val?.isShowSpinner = false;
+        });
+        showSnackBar(UNIQUE_KEY_BY_FAIL_LOGIN);
+      }
+    }
+  }
+
+  void showSnackBar(int flag) {
+    String? title;
+    String? text;
+    switch (flag) {
+      case UNIQUE_KEY_BY_FAIL_LOGIN:
+        title = LOGIN_FAIL_NOTI_TITLE;
+        text = LOGIN_FAIL_NOTI_TEXT;
+        break;
+
+      case UNIQUE_KEY_BY_SUCCESS_LOGIN:
+        title = LOGIN_SUCCESS_NOTI_TITLE;
+        text = LOGIN_SUCCESS_NOTI_TEXT;
+        break;
+    }
+
+    if (title != null && text != null) {
+      Get.snackbar(
+        title,
+        text,
+        backgroundColor: Colors.blue,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        forwardAnimationCurve: Curves.elasticInOut,
+        reverseAnimationCurve: Curves.easeOut,
+      );
+    }
+  }
 }
