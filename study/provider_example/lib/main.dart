@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider_example/fish_model.dart';
+import 'package:provider_example/seafish_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,8 +12,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => FishModel(name: "Salmon", number: 10, size: "big"),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) =>
+              FishModel(name: "Salmon", number: 10, size: "big"),),
+        ChangeNotifierProvider(
+          create: (context) =>
+              SeaFishModel(name: "Tuna", tunaNumber: 0, size: "middle"),),
+      ],
       child: MaterialApp(
         title: "Fish Shop(Provider Example)",
         home: FishOrder(),
@@ -26,7 +34,6 @@ class FishOrder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Fish Order"),
@@ -36,7 +43,9 @@ class FishOrder extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Fish name: ${Provider.of<FishModel>(context).name}",
+              "Fish name: ${Provider
+                  .of<FishModel>(context)
+                  .name}",
               style: TextStyle(fontSize: 20),
             ),
             High()
@@ -75,14 +84,18 @@ class SpicyA extends StatelessWidget {
     return Column(
       children: [
         Text(
-          "Fish number: ${Provider.of<FishModel>(context).number}",
+          "Fish number: ${Provider
+              .of<FishModel>(context)
+              .number}",
           style: TextStyle(
             fontSize: 16,
             color: Colors.red,
           ),
         ),
         Text(
-          "Fish size: ${Provider.of<FishModel>(context).size}",
+          "Fish size: ${Provider
+              .of<FishModel>(context)
+              .size}",
           style: TextStyle(
             fontSize: 16,
             color: Colors.red,
@@ -125,14 +138,18 @@ class SpicyB extends StatelessWidget {
     return Column(
       children: [
         Text(
-          "Fish number: ${Provider.of<FishModel>(context).number}",
+          "Tuna number: ${Provider
+              .of<SeaFishModel>(context)
+              .tunaNumber}",
           style: TextStyle(
             fontSize: 16,
             color: Colors.red,
           ),
         ),
         Text(
-          "Fish size ${Provider.of<FishModel>(context).size}",
+          "Tuna size: ${Provider
+              .of<SeaFishModel>(context)
+              .size}",
           style: TextStyle(
             fontSize: 16,
             color: Colors.red,
@@ -141,7 +158,17 @@ class SpicyB extends StatelessWidget {
         SizedBox(
           height: 20,
         ),
+        ElevatedButton(
+          onPressed: () {
+            Provider.of<SeaFishModel>(context, listen: false).changeSeaFishNumber();
+          },
+          child: Text("Change seafish number"),
+        ),
+        SizedBox(
+          height: 20,
+        ),
         Low(),
+
       ],
     );
   }
@@ -175,14 +202,18 @@ class SpicyC extends StatelessWidget {
     return Column(
       children: [
         Text(
-          "Fish number: ${Provider.of<FishModel>(context).number}",
+          "Fish number: ${Provider
+              .of<FishModel>(context)
+              .number}",
           style: TextStyle(
             fontSize: 16,
             color: Colors.red,
           ),
         ),
         Text(
-          "Fish size: ${Provider.of<FishModel>(context).size}",
+          "Fish size: ${Provider
+              .of<FishModel>(context)
+              .size}",
           style: TextStyle(
             fontSize: 16,
             color: Colors.red,

@@ -108,3 +108,29 @@ void main() {
 3. Provider.of를 통해서 위젯들이 쉽게 ChangeNotifier 인스턴스에 접근할 수 있게 해줌
 4. 필요시 UI를 리빌드 시켜줄 수 있음
 5. 굳이 UI를 리빌드할 필요가 없는 위젯을 위해서 `listen: false` 기능 제공
+
+# MultiProvider
+- 한 위젯에서 다른 두 개의 타입의 ChangeNotifierProvider에 접근하고 싶을때 사용
+```dart
+// Provider만 사용하면 가독성이 떨어짐
+Provider(
+  create: (context) => ModelA(),
+  child: Provider(
+    create: (context) => ModelB(),
+    child: Provider(
+      create: (context) => ModelC(),
+      child: MaterialApp(),
+    ),
+  ),
+);
+
+// MultiProvider를 사용하면 간결한 코드가 됨
+MultiProvider(
+  providers: [
+    Provider(create: (context) => ModelA,),
+    Provider(create: (context) => ModelB,),
+    Provider(create: (context) => ModelC,),
+  ],
+  child: MaterialApp(),
+);
+```
