@@ -1,56 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:get/get.dart';
 import 'package:refactoring_firebase_chat/util/const.dart';
-import 'package:refactoring_firebase_chat/vo/login_user_vo.dart';
+import '../controller/login_controller.dart';
 
-import 'dialog/find_id_password_dialog.dart';
-import 'dialog/signup_dialog.dart';
+class LoginFormView extends StatelessWidget {
+  LoginFormView(this.controller, {Key? key}) : super(key: key);
 
-class LoginFormScreen extends StatefulWidget {
-  const LoginFormScreen(this.loginProcess, {Key? key}) : super(key: key);
-
-  // 해당 화면에서 아이디, 비밀번호 입력 유효성 검사 완료시,
-  // LoginScreen(부모 위젯)에서 로그인 처리 진행
-  final Function loginProcess;
-
-  @override
-  State<LoginFormScreen> createState() => _LoginFormScreenState();
-}
-
-class _LoginFormScreenState extends State<LoginFormScreen> {
-
-  LoginUserVo loginUser = LoginUserVo();
-
-  // _isValidateForm, form내의 모든 TextFormField 유효성 검사를 위한 global key
-  final _loginFormKey = GlobalKey<FormState>();
   // 정사각형 seb widget, dialog를 위한 width, height size 변수
   late double subWidgetSize;
-  late String? savedId;
-
-  // 보여질 Dialog 변수
-  Widget targetDialog = const Center(
-    child: Text("empty"),
-  );
-  // 비밀번호 표시 여부 플래그
-  bool isVisiblePassword = false;
-  // 아이디 기억 여부 플래그(로그인시 Hive 저장 필요)
-  bool isSaveId = false;
-
-  final TextEditingController _idController = TextEditingController();
-
-  // onTap in 'Signin'
-  void _isAbleLoginProcess() {
-    if(_isValidateForm()) {
-      loginUser.isSaveId = isSaveId;
-      widget.loginProcess(loginUser);
-    }
-  }
+  final LoginController controller;
 
   @override
   Widget build(BuildContext context) {
     subWidgetSize = MediaQuery.of(context).size.width * WIDGET_SIZE_RATIO;
     // Hive 저장된 기존 데이터 set
-    _getSavedId();
+    // _getSavedId();
 
     return Container(
       width: subWidgetSize,
@@ -60,22 +24,25 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
         children: [
           // Email, Password 입력창
           Form(
-            key: _loginFormKey,
+            key: controller.loginFormKey,
             child: Column(
               children: [
                 // 아이디 입력폼
                 TextFormField(
                   key: const ValueKey(UNIQUE_KEY_BY_ID),
                   keyboardType: TextInputType.emailAddress,
-                  controller: _idController,
+                  controller: controller.idController,
                   validator: (value) {
-                    return _isValidateTextFormField(UNIQUE_KEY_BY_ID, value);
+                    return controller
+                        .isValidateTextFormField(UNIQUE_KEY_BY_ID);
                   },
                   onSaved: (value) {
-                    _setValue(UNIQUE_KEY_BY_ID, value);
+                    // controller.userModel().userId = value;
+                    controller.setValue(UNIQUE_KEY_BY_ID, value);
                   },
                   onChanged: (value) {
-                    _setValue(UNIQUE_KEY_BY_ID, value);
+                    // controller.userModel().userId = value;
+                    controller.setValue(UNIQUE_KEY_BY_ID, value);
                   },
                   decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.mail),
@@ -90,24 +57,25 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                 // 비밀번호 입력폼
                 TextFormField(
                   // 비밀번호 암호화(********)
-                  obscureText: !isVisiblePassword,
+                  obscureText: !controller.viewModel().isVisiblePassword,
                   key: const ValueKey(UNIQUE_KEY_BY_PASSWORD),
                   validator: (value) {
-                    return _isValidateTextFormField(UNIQUE_KEY_BY_PASSWORD, value);
+                    return controller
+                        .isValidateTextFormField(UNIQUE_KEY_BY_PASSWORD);
                   },
                   onSaved: (value) {
-                    _setValue(UNIQUE_KEY_BY_PASSWORD, value);
+                    controller.setValue(UNIQUE_KEY_BY_PASSWORD, value);
                   },
                   onChanged: (value) {
-                    _setValue(UNIQUE_KEY_BY_PASSWORD, value);
+                    controller.setValue(UNIQUE_KEY_BY_PASSWORD, value);
                   },
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: GestureDetector(
                         onTap: () {
-                          _toggleBoolFlagValue(UNIQUE_KEY_BY_PASSWORD);
+                          controller.toggleValue(UNIQUE_KEY_BY_PASSWORD);
                         },
-                        child: isVisiblePassword
+                        child: controller.viewModel().isVisiblePassword
                             ? const Icon(
                                 Icons.visibility,
                                 color: Colors.blue,
@@ -135,7 +103,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
               // Remember me 위젯
               GestureDetector(
                 onTap: () {
-                  _toggleBoolFlagValue(UNIQUE_KEY_BY_IS_SAVE_ID);
+                  controller.toggleValue(UNIQUE_KEY_BY_IS_SAVE_ID);
                 },
                 child: Row(
                   children: [
@@ -143,9 +111,9 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                       width: SIZED_BOX_WIDTH,
                     ),
                     Checkbox(
-                      value: isSaveId,
+                      value: controller.viewModel().isSaveId,
                       onChanged: (_) {
-                        _toggleBoolFlagValue(UNIQUE_KEY_BY_IS_SAVE_ID);
+                        controller.toggleValue(UNIQUE_KEY_BY_IS_SAVE_ID);
                       },
                     ),
                     const Text(
@@ -162,7 +130,9 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: _isAbleLoginProcess,
+                    onPressed: () {
+                      _isAbleLoginProcess(context);
+                    },
                     child: const Text(
                       LOGIN_TEXT,
                       style: TextStyle(
@@ -201,7 +171,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                       ),
                     ),
                     onTap: () {
-                      _showDialog(UNIQUE_KEY_BY_SIGNUP);
+                      _showDialog(UNIQUE_KEY_BY_SIGNUP, context);
                     },
                   ),
                 ],
@@ -218,7 +188,7 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                       ),
                     ),
                     onTap: () {
-                      _showDialog(UNIQUE_KEY_BY_FIND_ID_PASSWORD);
+                      _showDialog(UNIQUE_KEY_BY_FIND_ID_PASSWORD, context);
                     },
                   ),
                   const SizedBox(
@@ -237,80 +207,9 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
     );
   }
 
-  Future<void> _getSavedId() async {
-    var box = await Hive.openBox(SAVE_ID_TEXT);
-    String? savedId = box.get(SAVE_ID_TEXT);
-    bool? isSaveId = box.get(IS_SAVE_ID);
-
-    if(isSaveId != null && isSaveId && savedId != null) {
-      _idController.text = savedId;
-    }
-    if(!mounted) return ;
-    else {
-      if(isSaveId != null) {
-        setState(() {
-          this.isSaveId = isSaveId;
-        });
-      }
-    }
-  }
-  // TextFormField 유효성 검사
-  // _isAbleLoginProcess 내부 호출 함수 (onTap in 'Signin')
-  bool _isValidateForm() {
-    var currentState = _loginFormKey.currentState;
-    final isValid = currentState != null ? currentState.validate() : false;
-
-    if (isValid) {
-      currentState.save();
-    }
-
-    // 모든 유효성검사 완료시 로그인 처리
-    return isValid;
-  }
-
-  // 특정 TextFormField 유효성검사 및 유효성 실패 알림
-  // validator in 'TextFormField'
-  String? _isValidateTextFormField(int flag, String? value) {
-    if (value != null) {
-      switch (flag) {
-        case UNIQUE_KEY_BY_ID:
-          if (value.isEmpty || !value.contains("@")) {
-            return ID_FAIL_VALIDATE_NOTI_TEXT;
-          }
-          break;
-        case UNIQUE_KEY_BY_PASSWORD:
-          if (value.isEmpty || value.length < PASSWORD_LENGTH_LIMIT) {
-            return PASSWORD_FAIL_VALIDATE_NOTI_TEXT;
-          }
-          break;
-      }
-    }
-    return null;
-  }
-
-  // onChanged, onSaved in 'TextFormField'
-  void _setValue(int flag, String? value) {
-    switch (flag) {
-      case UNIQUE_KEY_BY_ID:
-        loginUser.userId = value;
-        break;
-      case UNIQUE_KEY_BY_PASSWORD:
-        loginUser.userPassword = value;
-        break;
-    }
-  }
-
   // 클릭한 버튼에 따라 다이얼로그 표시
-  // onTap in 'Signup', '아이디 비밀번호 찾기'
-  void _showDialog(int flag) {
-    switch (flag) {
-      case UNIQUE_KEY_BY_SIGNUP:
-        targetDialog = const SignupDialog();
-        break;
-      case UNIQUE_KEY_BY_FIND_ID_PASSWORD:
-        targetDialog = const FindIdPasswordDialog();
-        break;
-    }
+  void _showDialog(int flag, BuildContext context) {
+    controller.setTargetDialog(flag);
 
     // 선택한 Dialog 표시
     showDialog(
@@ -322,27 +221,61 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
           child: Container(
             width: subWidgetSize,
             height: subWidgetSize,
-            child: targetDialog,
+            child: controller.targetDialog,
           ),
         );
       },
     );
   }
 
-  // bool flag 토글
-  // onTap 'checkbox', 'password visible button'
-  void _toggleBoolFlagValue(int intFlag) {
-    setState(() {
-      switch (intFlag) {
-        case UNIQUE_KEY_BY_PASSWORD:
-          isVisiblePassword = !isVisiblePassword;
-          break;
+  // onTap in 'Signin'
+  Future<void> _isAbleLoginProcess(BuildContext context) async {
+    if (controller.isValidateForm()) {
+      controller.viewModel.update((val) {
+        val?.isShowSpinner = true;
+      });
 
-        case UNIQUE_KEY_BY_IS_SAVE_ID:
-          isSaveId = !isSaveId;
-          break;
+      try {
+        int? flag = await controller.loginProcess();
+        controller.viewModel.update((val) {
+          val?.isShowSpinner = false;
+        });
+
+        if (flag != null) {
+          // 로그인 실패
+          showSnackBar(flag);
+        } else {
+          // 로그인 성공
+
+        }
+      } catch (e) {
+        controller.viewModel.update((val) {
+          val?.isShowSpinner = false;
+        });
+        showSnackBar(UNIQUE_KEY_BY_FAIL_LOGIN);
       }
-    });
+    }
   }
 
+  void showSnackBar(int flag) {
+    String? title;
+    String? text;
+    switch (flag) {
+      case UNIQUE_KEY_BY_FAIL_LOGIN:
+        title = LOGIN_FAIL_NOTI_TITLE;
+        text = LOGIN_FAIL_NOTI_TEXT;
+    }
+
+    if (title != null && text != null) {
+      Get.snackbar(
+        title,
+        text,
+        backgroundColor: Colors.blue,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        forwardAnimationCurve: Curves.elasticInOut,
+        reverseAnimationCurve: Curves.easeOut,
+      );
+    }
+  }
 }

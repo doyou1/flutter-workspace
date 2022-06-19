@@ -7,7 +7,6 @@ class PersonalCard extends StatelessWidget {
   PersonalCard({Key? key}) : super(key: key);
   final Controller controller = Get.put(Controller());
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

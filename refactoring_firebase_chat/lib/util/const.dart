@@ -20,6 +20,7 @@ const String FIND_ID_PASSWORD_TEXT = "Forgot email/password?";
 
 const String ID_FAIL_VALIDATE_NOTI_TEXT = "Please enter a valid email address.";
 const String PASSWORD_FAIL_VALIDATE_NOTI_TEXT = "Please enter at least 6 characters";
+const String LOGIN_FAIL_NOTI_TITLE = "Login Fail";
 const String LOGIN_FAIL_NOTI_TEXT = "Please check your email and password";
 const String SAVE_ID_TEXT = "saveIdText";
 const String IS_SAVE_ID = "isSaveId";

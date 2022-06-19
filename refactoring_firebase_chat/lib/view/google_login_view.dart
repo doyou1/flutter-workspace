@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class GoogleLoginScreen extends StatelessWidget {
-  const GoogleLoginScreen({Key? key}) : super(key: key);
+class GoogleLoginView extends StatelessWidget {
+  const GoogleLoginView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
