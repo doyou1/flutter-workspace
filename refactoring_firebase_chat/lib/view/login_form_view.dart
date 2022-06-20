@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:refactoring_firebase_chat/controller/signup_controller.dart';
 import 'package:refactoring_firebase_chat/util/const.dart';
 import '../controller/login_controller.dart';
+import '../util/method.dart';
 
 class LoginFormView extends StatelessWidget {
   LoginFormView(this.controller, {Key? key}) : super(key: key);
+
 
   // 정사각형 seb widget, dialog를 위한 width, height size 변수
   late double subWidgetSize;
@@ -12,7 +15,11 @@ class LoginFormView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    subWidgetSize = MediaQuery.of(context).size.width * WIDGET_SIZE_RATIO;
+    final deviceWidth = MediaQuery.of(context).size.width;
+    final deviceHeight = MediaQuery.of(context).size.height;
+    final smallerSize = deviceWidth > deviceHeight ? deviceHeight : deviceWidth;
+
+    subWidgetSize = smallerSize * WIDGET_SIZE_RATIO;
     // Hive 저장된 기존 데이터 set
     // _getSavedId();
 
@@ -29,20 +36,19 @@ class LoginFormView extends StatelessWidget {
               children: [
                 // 아이디 입력폼
                 TextFormField(
-                  key: const ValueKey(UNIQUE_KEY_BY_ID),
+                  key: const ValueKey(UNIQUE_KEY_BY_LOGIN_ID),
                   keyboardType: TextInputType.emailAddress,
                   controller: controller.idController,
                   validator: (value) {
-                    return controller
-                        .isValidateTextFormField(UNIQUE_KEY_BY_ID);
+                    return isValidateTextFormField(UNIQUE_KEY_BY_LOGIN_ID, value);
                   },
                   onSaved: (value) {
                     // controller.userModel().userId = value;
-                    controller.setValue(UNIQUE_KEY_BY_ID, value);
+                    controller.setValue(UNIQUE_KEY_BY_LOGIN_ID, value);
                   },
                   onChanged: (value) {
                     // controller.userModel().userId = value;
-                    controller.setValue(UNIQUE_KEY_BY_ID, value);
+                    controller.setValue(UNIQUE_KEY_BY_LOGIN_ID, value);
                   },
                   decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.mail),
@@ -58,22 +64,21 @@ class LoginFormView extends StatelessWidget {
                 TextFormField(
                   // 비밀번호 암호화(********)
                   obscureText: !controller.viewModel().isVisiblePassword,
-                  key: const ValueKey(UNIQUE_KEY_BY_PASSWORD),
+                  key: const ValueKey(UNIQUE_KEY_BY_LOGIN_PASSWORD),
                   validator: (value) {
-                    return controller
-                        .isValidateTextFormField(UNIQUE_KEY_BY_PASSWORD);
+                    return isValidateTextFormField(UNIQUE_KEY_BY_LOGIN_PASSWORD, value);
                   },
                   onSaved: (value) {
-                    controller.setValue(UNIQUE_KEY_BY_PASSWORD, value);
+                    controller.setValue(UNIQUE_KEY_BY_LOGIN_PASSWORD, value);
                   },
                   onChanged: (value) {
-                    controller.setValue(UNIQUE_KEY_BY_PASSWORD, value);
+                    controller.setValue(UNIQUE_KEY_BY_LOGIN_PASSWORD, value);
                   },
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: GestureDetector(
                         onTap: () {
-                          controller.toggleValue(UNIQUE_KEY_BY_PASSWORD);
+                          controller.toggleValue(UNIQUE_KEY_BY_LOGIN_PASSWORD);
                         },
                         child: controller.viewModel().isVisiblePassword
                             ? const Icon(
@@ -210,13 +215,11 @@ class LoginFormView extends StatelessWidget {
   // 클릭한 버튼에 따라 다이얼로그 표시
   void _showDialog(int flag, BuildContext context) {
     controller.setTargetDialog(flag);
-
     // 선택한 Dialog 표시
     showDialog(
       context: context,
       builder: (context) {
         return Dialog(
-          backgroundColor: Colors.blue,
           // child: SignupDialog(),
           child: Container(
             width: subWidgetSize,
@@ -227,4 +230,5 @@ class LoginFormView extends StatelessWidget {
       },
     );
   }
+
 }

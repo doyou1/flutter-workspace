@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -11,6 +12,8 @@ import '../util/const.dart';
 import '../view/dialog/signup_dialog.dart';
 
 class LoginController extends GetxController {
+  final _authentication = FirebaseAuth.instance;
+
   final userModel = LoginUserModel().obs;
   final viewModel = LoginViewModel().obs;
   final TextEditingController idController = TextEditingController();
@@ -32,14 +35,12 @@ class LoginController extends GetxController {
   Future<int?> loginProcess() async {
       // signIn
       await Future.delayed(Duration(seconds: 1,), () {});
-      final bool isSuccess = (Random().nextInt(10) + 1) >= 5 ? true : false;
-      // final bool isSuccess = true;
-      // final bool isSuccess = false;
+      final loginUser = await _authentication.signInWithEmailAndPassword(email: userModel().userId!, password: userModel().userPassword!);
 
-      if(isSuccess) { // 로그인 성공
-        saveIdProcess();
-        return UNIQUE_KEY_BY_SUCCESS_LOGIN;
-
+      if(loginUser.user != null) { // 로그인 성공
+        await saveIdProcess();
+        // return UNIQUE_KEY_BY_SUCCESS_LOGIN;
+        return null;
       } else { // 로그인 실패
         return UNIQUE_KEY_BY_FAIL_LOGIN;
       }
@@ -49,6 +50,7 @@ class LoginController extends GetxController {
   Future<void> saveIdProcess() async {
     var box = await Hive.openBox(SAVE_ID_TEXT);
     box.put(IS_SAVE_ID, viewModel().isSaveId);
+    print("isSaveId: ${viewModel().isSaveId}");
     if (viewModel().isSaveId) {
       // 로그인 성공시, id 저장해야 한다면
       box.put(SAVE_ID_TEXT, userModel().userId);
@@ -62,6 +64,7 @@ class LoginController extends GetxController {
     String? savedId = box.get(SAVE_ID_TEXT);
     bool? isSaveId = box.get(IS_SAVE_ID);
 
+    print("savedId: $savedId");
     if(isSaveId != null && isSaveId && savedId != null) {
       userModel.update((val) {
         val?.userId = savedId;
@@ -93,41 +96,11 @@ class LoginController extends GetxController {
     return isValid;
   }
 
-  // 특정 TextFormField 유효성검사 및 유효성 실패 알림
-  // validator in 'TextFormField'
-  String? isValidateTextFormField(int flag) {
-      switch (flag) {
-        case UNIQUE_KEY_BY_ID:
-          final value = userModel().userId;
-          if(value != null) {
-            if (value.isEmpty || !(value.contains("@"))) {
-              return ID_FAIL_VALIDATE_NOTI_TEXT;
-            } else {  // 유효성 검사 통과
-              return null;
-            }
-          } else {
-            return ID_FAIL_VALIDATE_NOTI_TEXT;
-          }
-        case UNIQUE_KEY_BY_PASSWORD:
-          final value = userModel().userPassword;
-          if(value != null) {
-            if (value.isEmpty || value.length < PASSWORD_LENGTH_LIMIT) {
-              return PASSWORD_FAIL_VALIDATE_NOTI_TEXT;
-            }  else {  // 유효성 검사 통과
-              return null;
-            }
-          } else {
-            return PASSWORD_FAIL_VALIDATE_NOTI_TEXT;
-          }
-      }
-    return null;
-  }
-
   // bool flag 토글
   // onTap 'checkbox', 'password visible button'
   void toggleValue(int intFlag) {
     switch (intFlag) {
-      case UNIQUE_KEY_BY_PASSWORD:
+      case UNIQUE_KEY_BY_LOGIN_PASSWORD:
         viewModel.update((val) {
           if(val != null) {
             val.isVisiblePassword = !(val.isVisiblePassword);
@@ -148,7 +121,7 @@ class LoginController extends GetxController {
   // TextFormField set value
   void setValue(int intFlag, String? value) {
     switch (intFlag) {
-      case UNIQUE_KEY_BY_ID:
+      case UNIQUE_KEY_BY_LOGIN_ID:
         userModel.update((val) {
           if(val != null) {
             val.userId = value;
@@ -156,7 +129,7 @@ class LoginController extends GetxController {
         });
         break;
 
-      case UNIQUE_KEY_BY_PASSWORD:
+      case UNIQUE_KEY_BY_LOGIN_PASSWORD:
         userModel.update((val) {
           if(val != null) {
             val.userPassword = value;
