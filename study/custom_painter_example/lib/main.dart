@@ -1,5 +1,6 @@
 import 'package:custom_painter_example/view/arc_paint_page.dart';
 import 'package:custom_painter_example/view/circle_paint_page.dart';
+import 'package:custom_painter_example/view/game_paint_page.dart';
 import 'package:custom_painter_example/view/image_paint_page.dart';
 import 'package:custom_painter_example/view/line_paint_page.dart';
 import 'package:custom_painter_example/view/rectangle_paint_page.dart';
@@ -40,7 +41,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 7,
+      length: 8,
+      initialIndex: 7,
       child: Scaffold(
         appBar: AppBar(
           title: Text(MyApp.title),
@@ -53,6 +55,7 @@ class _HomePageState extends State<HomePage> {
               Tab(icon: Icon(Icons.architecture), text: "Arc"),
               Tab(icon: Icon(Icons.warning), text: "Trinagle"),
               Tab(icon: Icon(Icons.image), text: "Image"),
+              Tab(icon: Icon(Icons.gamepad), text: "Game"),
             ],
           ),
         ),
@@ -65,6 +68,7 @@ class _HomePageState extends State<HomePage> {
             ArcPaintPage(),
             TrianglePaintPage(),
             ImagePaintPage(),
+            GamePaintPage(),
           ],
         ),
       ),
