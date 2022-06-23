@@ -12,10 +12,11 @@ class GamePaintPage extends StatefulWidget {
 }
 
 class _GamePaintPageState extends State<GamePaintPage> {
-  Point<int> point = Point<int>(0, 0);
   double widgetSize = 400.0;
-  int rows = 10;
-  int columns = 10;
+  int rows = 30;
+  int columns = 30;
+  double tinyDiff = 0.5;
+  late Point<int> point = Point<int>((rows / 2).toInt(), (columns / 2).toInt());
   late double cellSize = (widgetSize / rows).toDouble();
 
   AccelerometerEvent? acceleration;
@@ -40,6 +41,30 @@ class _GamePaintPageState extends State<GamePaintPage> {
     });
   }
 
+  void moveToLeft() {
+    int newX = point.x - 1;
+    if (newX < 0) newX = 0;
+    point = Point<int>(newX, point.y);
+  }
+
+  void moveToRight() {
+    int newX = point.x + 1;
+    if (newX > columns - 1) newX = columns - 1;
+    point = Point<int>(newX, point.y);
+  }
+
+  void moveToUp() {
+    int newY = point.y - 1;
+    if (newY < 0) newY = 0;
+    point = Point<int>(point.x, newY);
+  }
+
+  void moveToDown() {
+    int newY = point.y + 1;
+    if (newY > rows - 1) newY = rows - 1;
+    point = Point<int>(point.x, newY);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -54,65 +79,111 @@ class _GamePaintPageState extends State<GamePaintPage> {
               foregroundPainter: GamePainter(point, rows, columns, cellSize),
             ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                point = Point<int>(0, 0);
-              });
-            },
-            child: Text("move"),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    moveToLeft();
+                  });
+                },
+                child: Icon(Icons.arrow_left),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    moveToUp();
+                  });
+                },
+                child: Icon(Icons.arrow_upward),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    moveToDown();
+                  });
+                },
+                child: Icon(Icons.arrow_downward),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    moveToRight();
+                  });
+                },
+                child: Icon(Icons.arrow_right),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Point<int>? prev;
+  Point<int>? prevPoint;
+  AccelerometerEvent? prevAcceleration;
+
   void _step() {
+    if (prevAcceleration == null) {
+      prevAcceleration = acceleration;
+      return;
+    }
+
     // print("acceleration: $acceleration");
-    if (acceleration != null) {
-      int currentX = acceleration!.x.toInt();
-      int currentY = acceleration!.y.toInt();
-      if(prev != null) {
-        if(currentX - prev!.x == 0 || currentY - prev!.y == 0) {
-          // 미미한 변화
-          return;
-        } else {
-          int moveX = currentX - prev!.x;
-          int moveY = currentX - prev!.y;
+    if (acceleration != null && prevAcceleration != null) {
+      int diffX = (acceleration!.x - prevAcceleration!.x).toInt();
+      int diffY = (acceleration!.y - prevAcceleration!.y).toInt();
+      int diffZ = (acceleration!.z - prevAcceleration!.z).toInt();
 
-          int nextX = -1;
-          if(prev!.x + moveX > rows) {
-            nextX = rows;
-          } else {
-            nextX = prev!.x + moveX;
-          }
+      int absX = diffX.abs();
+      int absY = diffY.abs();
+      int absZ = diffZ.abs();
 
-          int nextY = -1;
-          if(prev!.y + moveY > columns) {
-            nextY = columns;
-          } else {
-            nextY = prev!.y + moveY;
-          }
-
-          int diffX = (nextX.abs() - point.x.abs()).abs();
-          int diffY = (nextY.abs() - point.y.abs()).abs();
-
-          if(diffX > diffY) {
-            point = Point<int>(nextX, point.y);
-          } else if(diffX < diffY) {
-            point = Point<int>(point.x, nextY);
-          } else {
-            point = Point<int>(nextX, nextY);
-
-          }
-        }
-      } else {
-        prev = Point<int>(acceleration!.x.toInt(), acceleration!.y.toInt());
+      // 미미한 변화는 움직이지 않음
+      if (absX < tinyDiff && absY < tinyDiff && absZ < tinyDiff) {
+        prevAcceleration = acceleration;
         return;
       }
-    } else {
-      return;
+
+      // X의 변화가 제일 크면
+      if (absX > absY && absX > absZ) {
+        // 변화가 양수이면, 오른쪽이동  - 핸드폰
+        // 변화가 양수이면, 아래쪽이동   - 태블릿
+        if (diffX > 0) {
+          // moveToRight();
+          moveToDown();
+        }
+        // 변화가 음수이면, 왼쪽이동
+        // 변화가 음수이면, 위쪽이동
+        else {
+          // moveToLeft();
+          moveToUp();
+        }
+      }
+      // Y의 변화가 제일 크면
+      else if (absY > absX && absY > absZ) {
+        // 변화가 양수이면, 아래쪽이동
+        // 변화가 양수이면, 오른쪽이동
+        if (diffY > 0) {
+          // moveToDown();
+          moveToRight();
+          // 변화가 음수이면, 위쪽 이동
+          // 변화가 음수이면, 왼쪽 이동
+        } else {
+          // moveToUp();
+          moveToLeft();
+        }
+      }
+      // Z의 변화가 제일 크면
+      else if (absZ > absX && absZ > absY) {
+        // print("diffZ: $diffZ");
+
+        if (diffZ > 0) {
+          moveToUp();
+        } else {
+          moveToDown();
+        }
+      }
     }
   }
 }
