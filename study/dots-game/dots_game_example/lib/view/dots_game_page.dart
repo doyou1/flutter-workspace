@@ -21,9 +21,13 @@ class DotsGamePage extends StatefulWidget {
 }
 
 class _DotsGamePageState extends State<DotsGamePage> {
-  late GamePoint points;
+  // 게임 방법 위젯(조이스틱, 가속도계) 플래그
   bool? isSwitched;
 
+  // 게임 좌표들 변수
+  late GamePoint points;
+
+  // 가속도계 이벤트 리스너 관련 변수
   StreamSubscription<AccelerometerEvent>? _streamSubscription;
   AccelerometerEvent? accelerometerEvent;
   Timer? _timer;
@@ -35,8 +39,11 @@ class _DotsGamePageState extends State<DotsGamePage> {
   }
 
   void init() {
+    // Random Game Point 생성
     points = GamePointRandomGenerator.getGamePoint();
+    // 직전 게임모드 불러오기
     setIsSwitched();
+    // 가속도계 이벤트 리스너 설정
     setListener();
   }
 
@@ -66,7 +73,7 @@ class _DotsGamePageState extends State<DotsGamePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // 게임 위젯(픽셀 paint)
+          // 게임 화면 위젯(픽셀 paint)
           Container(
             width: WIDGET_SIZE,
             height: WIDGET_SIZE,
@@ -74,10 +81,11 @@ class _DotsGamePageState extends State<DotsGamePage> {
               foregroundPainter: GamePainter(points),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
-          // Switch
+
+          // 스위치 위젯
           Container(
             width: 100.0,
             height: 100.0,
@@ -92,9 +100,10 @@ class _DotsGamePageState extends State<DotsGamePage> {
                   }),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
+
           // 게임 방법 위젯(조이스틱, 가속도계)
           !(isSwitched ?? false) ? buildJoyStick() : buildAccelerometer()
         ],
@@ -102,6 +111,7 @@ class _DotsGamePageState extends State<DotsGamePage> {
     );
   }
 
+  // 조이스틱 위젯
   Widget buildJoyStick() {
     return Container(
       height: 200,
@@ -110,6 +120,7 @@ class _DotsGamePageState extends State<DotsGamePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // 상 버튼
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -120,13 +131,14 @@ class _DotsGamePageState extends State<DotsGamePage> {
                     }
                   });
                 },
-                child: Icon(Icons.arrow_upward),
+                child: const Icon(Icons.arrow_upward),
               ),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // 좌 버튼
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -137,11 +149,12 @@ class _DotsGamePageState extends State<DotsGamePage> {
                     }
                   });
                 },
-                child: Icon(Icons.arrow_back),
+                child: const Icon(Icons.arrow_back),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10.0,
               ),
+              // 하 버튼
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -152,11 +165,12 @@ class _DotsGamePageState extends State<DotsGamePage> {
                     }
                   });
                 },
-                child: Icon(Icons.arrow_downward),
+                child: const Icon(Icons.arrow_downward),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10.0,
               ),
+              // 우 버튼
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -167,7 +181,7 @@ class _DotsGamePageState extends State<DotsGamePage> {
                     }
                   });
                 },
-                child: Icon(Icons.arrow_forward),
+                child: const Icon(Icons.arrow_forward),
               ),
             ],
           ),
@@ -176,17 +190,20 @@ class _DotsGamePageState extends State<DotsGamePage> {
     );
   }
 
+  // 가속도계 위젯
   Widget buildAccelerometer() {
     return Container(
       height: 200.0,
       child: Column(
         children: [
+          Text("x: ${accelerometerEvent?.x ?? 0.0}, y: ${accelerometerEvent?.y ?? 0.0}, z: ${accelerometerEvent?.z ?? 0.0}"),
           Text("상하좌우로 움직여보세요!"),
         ],
       ),
     );
   }
 
+  // timer 실행시 호출되는 메서드
   void step() async {
     if (accelerometerEvent != null) {
       final handler = GameHandler(points, accelerometerEvent!);
@@ -195,6 +212,7 @@ class _DotsGamePageState extends State<DotsGamePage> {
     }
   }
 
+  // 현재 Goal 도착 확인 메서드
   void checkGoal(bool isGoal) async {
     if (isGoal) {
       await Future.delayed(const Duration(milliseconds: 100));
@@ -208,6 +226,7 @@ class _DotsGamePageState extends State<DotsGamePage> {
     }
   }
 
+  // 가속도계 이벤트 리스너 취소 메서드
   void cancleListener() {
     if (_streamSubscription != null) {
       _streamSubscription!.cancel();

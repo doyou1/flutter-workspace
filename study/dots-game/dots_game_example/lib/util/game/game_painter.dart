@@ -3,6 +3,7 @@ import 'package:dots_game_example/view/game_point.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+// 게임 화면 위젯 그리는 클래스
 class GamePainter extends CustomPainter {
   late double cellSize = (WIDGET_SIZE / ROWS).toDouble();
 
@@ -13,20 +14,23 @@ class GamePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // 전체화면
+    // 전체화면 style
     final blackLine = Paint()
       ..color = Colors.black
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
 
+    // me style
     final blueFilled = Paint()
       ..color = Colors.blue
       ..style = PaintingStyle.fill;
 
+    // wall style
     final blackFilled = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.fill;
 
+    // goal style
     final redFilled = Paint()
       ..color = Colors.red
       ..style = PaintingStyle.fill;
@@ -34,7 +38,7 @@ class GamePainter extends CustomPainter {
     const a = Offset(0.0, 0.0);
     final b = Offset(size.width, size.height);
     final rect = Rect.fromPoints(a, b);
-    // 전체화면 그림
+    // 전체화면 draw
     canvas.drawRect(rect, blackLine);
 
     final me = points.me;
@@ -62,6 +66,7 @@ class GamePainter extends CustomPainter {
     }
   }
 
+  // repaint 가능 여부(true로 설정)
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
