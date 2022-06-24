@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 
 Future<void> main()  async {
+  // Initializes Hive with the path from getApplicationDocumentsDirectory.
+  // You can provide a subDir where the boxes should be stored.
+  // Hive 초기화
   await Hive.initFlutter();
   runApp(const MyApp());
 }

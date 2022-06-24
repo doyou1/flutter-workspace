@@ -42,6 +42,7 @@ class _DotsGamePageState extends State<DotsGamePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // 게임 위젯(픽셀 paint)
           Container(
             width: widgetSize,
             height: widgetSize,
@@ -53,6 +54,7 @@ class _DotsGamePageState extends State<DotsGamePage> {
           SizedBox(
             height: 30.0,
           ),
+          // Switch
           Container(
             width: 100.0,
             height: 100.0,
@@ -70,7 +72,7 @@ class _DotsGamePageState extends State<DotsGamePage> {
           SizedBox(
             height: 30.0,
           ),
-          // 방향키 버튼
+          // 게임 방법 위젯(조이스틱, 가속도계)
           !(isSwitched ?? false) ? buildJoyStick() : buildAccelerometer()
         ],
       ),
