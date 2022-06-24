@@ -1,16 +1,15 @@
+import 'package:dots_game_example/util/const.dart';
+import 'package:dots_game_example/view/game_point.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 class GamePainter extends CustomPainter {
-  int rows;
-  int columns;
-  double cellSize;
+  late double cellSize = (WIDGET_SIZE / ROWS).toDouble();
 
-  GamePainter(this.point, this.goal, this.wall, this.rows, this.columns, this.cellSize);
+  GamePainter(
+      this.points);
 
-  Point<int> point;
-  Point<int>? goal;
-  List<Point<int>>? wall;
+  final GamePoint points;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -32,35 +31,34 @@ class GamePainter extends CustomPainter {
       ..color = Colors.red
       ..style = PaintingStyle.fill;
 
-    final a = Offset(0.0, 0.0);
+    const a = Offset(0.0, 0.0);
     final b = Offset(size.width, size.height);
     final rect = Rect.fromPoints(a, b);
     // 전체화면 그림
     canvas.drawRect(rect, blackLine);
 
+    final me = points.me;
+    final goal = points.goal;
+    final wall = points.wall;
+
     // 내 위치
     // 왼쪽위 (x, y)
-    final pa = Offset(cellSize * point.x, cellSize * point.y);
+    final pa = Offset(cellSize * me.x, cellSize * me.y);
     // 오른쪽아래 (x+1, y+1)
-    final pb = Offset(cellSize * (point.x + 1), cellSize * (point.y + 1));
+    final pb = Offset(cellSize * (me.x + 1), cellSize * (me.y + 1));
     canvas.drawRect(Rect.fromPoints(pa, pb), blueFilled);
 
-    if(goal != null) {
-      // 골
-      // 왼쪽위 (x, y)
-      final ga = Offset(cellSize * goal!.x, cellSize * goal!.y);
-      // 오른쪽아래 (x+1, y+1)
-      final gb = Offset(cellSize * (goal!.x + 1), cellSize * (goal!.y + 1));
-      canvas.drawRect(Rect.fromPoints(ga, gb), redFilled);
-    }
+    // 골
+    final ga = Offset(cellSize * goal.x, cellSize * goal.y);
+    final gb = Offset(cellSize * (goal.x + 1), cellSize * (goal.y + 1));
+    canvas.drawRect(Rect.fromPoints(ga, gb), redFilled);
 
-    if(wall != null) {
-      for(Point<int> w in wall!) {
-        final wa = Offset(cellSize * w.x, cellSize * w.y);
-        // 오른쪽아래 (x+1, y+1)
-        final wb = Offset(cellSize * (w.x + 1), cellSize * (w.y + 1));
-        canvas.drawRect(Rect.fromPoints(wa, wb), blackFilled);
-      }
+    // 벽
+    for (Point<int> w in wall) {
+      final wa = Offset(cellSize * w.x, cellSize * w.y);
+      // 오른쪽아래 (x+1, y+1)
+      final wb = Offset(cellSize * (w.x + 1), cellSize * (w.y + 1));
+      canvas.drawRect(Rect.fromPoints(wa, wb), blackFilled);
     }
   }
 
