@@ -8,3 +8,4 @@ const int GAME_COUNT = 5;
 const int WIN_FLAG = -1;
 const int FAIL_FLAG = -2;
 const int NOT_WORKING_COUNTDOWN_TIMER_FLAG = -3;
+const int MILLISECONDS = 200;
