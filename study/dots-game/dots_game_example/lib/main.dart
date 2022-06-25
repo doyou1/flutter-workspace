@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: HomePage(),
     );
   }
@@ -25,14 +25,16 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
 
+  const HomePage({this.index});
+  final int? index;
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      initialIndex: 0,
+      initialIndex: index ?? 0,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Dots Game Example"),
           bottom: TabBar(
             tabs: [
               Tab(icon: Icon(Icons.looks_one), text: "Random"),

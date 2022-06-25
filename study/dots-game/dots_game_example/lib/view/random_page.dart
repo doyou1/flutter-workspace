@@ -81,10 +81,6 @@ class _RandomPageState extends State<RandomPage> with AutomaticKeepAliveClientMi
               foregroundPainter: GamePainter(points),
             ),
           ),
-          const SizedBox(
-            height: 30.0,
-          ),
-
           // 스위치 위젯
           Container(
             width: 100.0,
@@ -100,10 +96,6 @@ class _RandomPageState extends State<RandomPage> with AutomaticKeepAliveClientMi
                   }),
             ),
           ),
-          const SizedBox(
-            height: 30.0,
-          ),
-
           // 게임 방법 위젯(조이스틱, 가속도계)
           !(isSwitched ?? false) ? buildJoyStick() : buildAccelerometer()
         ],
@@ -114,7 +106,7 @@ class _RandomPageState extends State<RandomPage> with AutomaticKeepAliveClientMi
   // 조이스틱 위젯
   Widget buildJoyStick() {
     return Container(
-      height: 200,
+      height: 150,
       child: Column(
         children: [
           Row(
@@ -193,7 +185,7 @@ class _RandomPageState extends State<RandomPage> with AutomaticKeepAliveClientMi
   // 가속도계 위젯
   Widget buildAccelerometer() {
     return Container(
-      height: 200.0,
+      height: 150.0,
       child: Column(
         children: [
           Text("x: ${accelerometerEvent?.x ?? 0.0}, y: ${accelerometerEvent?.y ?? 0.0}, z: ${accelerometerEvent?.z ?? 0.0}"),

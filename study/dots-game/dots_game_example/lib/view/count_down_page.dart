@@ -20,9 +20,16 @@ class CountDownPage extends StatefulWidget {
   State<CountDownPage> createState() => _CountDownPageState();
 }
 
-class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveClientMixin<CountDownPage> {
+class _CountDownPageState extends State<CountDownPage>
+    with AutomaticKeepAliveClientMixin<CountDownPage> {
   // 게임 방법 위젯(조이스틱, 가속도계) 플래그
   bool? isSwitched;
+
+  // 카운트다운 타이머 관련 설정
+  bool isRunning = false;
+  int second = SECOND;
+  int gameCount = GAME_COUNT;
+  Timer? _countdownTimer;
 
   // 게임 좌표들 변수
   late GamePoint points;
@@ -30,7 +37,7 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
   // 가속도계 이벤트 리스너 관련 변수
   StreamSubscription<AccelerometerEvent>? _streamSubscription;
   AccelerometerEvent? accelerometerEvent;
-  Timer? _timer;
+  Timer? _accelerometerTimer;
 
   @override
   void initState() {
@@ -43,12 +50,23 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
     points = GamePointRandomGenerator.getGamePoint();
     // 직전 게임모드 불러오기
     setIsSwitched();
+    setCountdownTimer();
     // 가속도계 이벤트 리스너 설정
     setListener();
   }
 
   void setIsSwitched() async {
     isSwitched = await HiveUtil.getIsSwitched();
+  }
+
+  void setCountdownTimer() async {
+    isRunning = await HiveUtil.getIsRunning();
+    second = await HiveUtil.getSecond();
+    gameCount = await HiveUtil.getGameCount();
+
+    if (isRunning) {
+      startCountdownTimer();
+    }
   }
 
   void setListener() {
@@ -58,7 +76,8 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
       });
     });
 
-    _timer = Timer.periodic(const Duration(milliseconds: 200), (_) {
+    _accelerometerTimer =
+        Timer.periodic(const Duration(milliseconds: 200), (_) {
       if (isSwitched ?? false) {
         setState(() {
           step();
@@ -81,29 +100,43 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
               foregroundPainter: GamePainter(points),
             ),
           ),
-          const SizedBox(
-            height: 30.0,
-          ),
-
           // 스위치 위젯
           Container(
-            width: 100.0,
-            height: 100.0,
-            child: FittedBox(
-              fit: BoxFit.fill,
-              child: Switch(
-                  value: isSwitched ?? false,
-                  onChanged: (value) {
-                    setState(() {
-                      isSwitched = value;
-                    });
-                  }),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 100.0,
+                  height: 100.0,
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: Switch(
+                        value: isSwitched ?? false,
+                        onChanged: (value) {
+                          setState(() {
+                            isSwitched = value;
+                          });
+                        }),
+                  ),
+                ),
+                Container(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        if (!isRunning) {
+                          isRunning = true;
+                          startCountdownTimer();
+                        }
+                      });
+                    },
+                    child: isRunning
+                        ? Text("$gameCount판남음 Countdown: $second")
+                        : Text("Timer Start"),
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(
-            height: 30.0,
-          ),
-
           // 게임 방법 위젯(조이스틱, 가속도계)
           !(isSwitched ?? false) ? buildJoyStick() : buildAccelerometer()
         ],
@@ -114,7 +147,7 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
   // 조이스틱 위젯
   Widget buildJoyStick() {
     return Container(
-      height: 200,
+      height: 150.0,
       child: Column(
         children: [
           Row(
@@ -123,6 +156,10 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
               // 상 버튼
               ElevatedButton(
                 onPressed: () {
+                  if (!isRunning) {
+                    showSnackbar(NOT_WORKING_COUNTDOWN_TIMER_FLAG);
+                    return;
+                  }
                   setState(() {
                     if (accelerometerEvent != null) {
                       final handler = GameHandler(points, accelerometerEvent!);
@@ -141,6 +178,10 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
               // 좌 버튼
               ElevatedButton(
                 onPressed: () {
+                  if (!isRunning) {
+                    showSnackbar(NOT_WORKING_COUNTDOWN_TIMER_FLAG);
+                    return;
+                  }
                   setState(() {
                     if (accelerometerEvent != null) {
                       final handler = GameHandler(points, accelerometerEvent!);
@@ -157,6 +198,10 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
               // 하 버튼
               ElevatedButton(
                 onPressed: () {
+                  if (!isRunning) {
+                    showSnackbar(NOT_WORKING_COUNTDOWN_TIMER_FLAG);
+                    return;
+                  }
                   setState(() {
                     if (accelerometerEvent != null) {
                       final handler = GameHandler(points, accelerometerEvent!);
@@ -173,6 +218,10 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
               // 우 버튼
               ElevatedButton(
                 onPressed: () {
+                  if (!isRunning) {
+                    showSnackbar(NOT_WORKING_COUNTDOWN_TIMER_FLAG);
+                    return;
+                  }
                   setState(() {
                     if (accelerometerEvent != null) {
                       final handler = GameHandler(points, accelerometerEvent!);
@@ -193,10 +242,11 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
   // 가속도계 위젯
   Widget buildAccelerometer() {
     return Container(
-      height: 200.0,
+      height: 150.0,
       child: Column(
         children: [
-          Text("x: ${accelerometerEvent?.x ?? 0.0}, y: ${accelerometerEvent?.y ?? 0.0}, z: ${accelerometerEvent?.z ?? 0.0}"),
+          Text(
+              "x: ${accelerometerEvent?.x ?? 0.0}, y: ${accelerometerEvent?.y ?? 0.0}, z: ${accelerometerEvent?.z ?? 0.0}"),
           Text("상하좌우로 움직여보세요!"),
         ],
       ),
@@ -205,6 +255,10 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
 
   // timer 실행시 호출되는 메서드
   void step() async {
+    if (!isRunning) {
+      // showSnackbar(NOT_WORKING_COUNTDOWN_TIMER_FLAG);
+      return;
+    }
     if (accelerometerEvent != null) {
       final handler = GameHandler(points, accelerometerEvent!);
       points = handler.step().result();
@@ -215,14 +269,18 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
   // 현재 Goal 도착 확인 메서드
   void checkGoal(bool isGoal) async {
     if (isGoal) {
-      await Future.delayed(const Duration(milliseconds: 100));
       HiveUtil.saveIsSwitched(isSwitched ?? false);
-
-      if (!mounted) return;
-      Navigator.of(context).pop();
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return HomePage();
-      }));
+      HiveUtil.saveIsRunning(isRunning);
+      HiveUtil.saveSecond(second);
+      HiveUtil.saveGameCount(gameCount - 1);
+      if (isWinning()) {
+        showSnackbar(WIN_FLAG);
+        setState(() {
+          cancleCountdownTimer();
+          resetCountdownTimerConfig();
+        });
+      }
+      refreshPage();
     }
   }
 
@@ -233,20 +291,106 @@ class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveCl
       _streamSubscription = null;
     }
 
-    if (_timer != null) {
-      _timer!.cancel();
-      _timer = null;
+    if (_accelerometerTimer != null) {
+      _accelerometerTimer!.cancel();
+      _accelerometerTimer = null;
     }
+  }
+
+  void cancleCountdownTimer() {
+    if (_countdownTimer != null) {
+      _countdownTimer!.cancel();
+      _countdownTimer = null;
+    }
+    resetCountdownTimerConfig();
+  }
+
+  void startCountdownTimer() {
+    const oneSec = Duration(seconds: 1);
+    _countdownTimer = Timer.periodic(oneSec, (timer) {
+      if (second == 0) {
+        setState(() {
+          timer.cancel();
+          resetCountdownTimerConfig();
+        });
+        showSnackbar(FAIL_FLAG);
+        refreshPage();
+      } else {
+        setState(() {
+          second--;
+        });
+      }
+    });
+  }
+
+  Future<void> saveCurrentTimerConfig() async {
+    HiveUtil.saveIsRunning(isRunning);
+    HiveUtil.saveSecond(second);
   }
 
   @override
   void dispose() {
     super.dispose();
     cancleListener();
+    cancleCountdownTimer();
   }
 
   // Tabbar 변경에 따라 to block reload
   @override
   bool get wantKeepAlive => true;
 
+  void resetCountdownTimerConfig() {
+    _countdownTimer = null;
+    second = SECOND;
+    isRunning = false;
+    HiveUtil.saveIsRunning(false);
+    HiveUtil.saveGameCount(GAME_COUNT);
+    HiveUtil.saveSecond(SECOND);
+  }
+
+  bool isWinning() {
+    return (gameCount - 1) == 0;
+  }
+
+  void showSnackbar(int flag) async {
+    switch (flag) {
+      case WIN_FLAG:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("성공!!!"),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.blueAccent,
+          ),
+        );
+        break;
+      case FAIL_FLAG:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text("실패ㅠㅠㅠ"),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.redAccent),
+        );
+        break;
+      case NOT_WORKING_COUNTDOWN_TIMER_FLAG:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text("Countdown Timer를 시작해주세요!"),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.grey),
+        );
+        break;
+    }
+    await Future.delayed(const Duration(milliseconds: 1000));
+  }
+
+  void refreshPage() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return HomePage(
+        index: 1,
+      );
+    }));
+  }
 }
