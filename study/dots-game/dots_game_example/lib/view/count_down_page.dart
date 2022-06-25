@@ -11,16 +11,16 @@ import '../util/game/game_handler.dart';
 import '../util/game/game_painter.dart';
 import '../util/game/game_point_random_generator.dart';
 
-class DotsGamePage extends StatefulWidget {
-  const DotsGamePage({
+class CountDownPage extends StatefulWidget {
+  const CountDownPage({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<DotsGamePage> createState() => _DotsGamePageState();
+  State<CountDownPage> createState() => _CountDownPageState();
 }
 
-class _DotsGamePageState extends State<DotsGamePage> {
+class _CountDownPageState extends State<CountDownPage> with AutomaticKeepAliveClientMixin<CountDownPage> {
   // 게임 방법 위젯(조이스틱, 가속도계) 플래그
   bool? isSwitched;
 
@@ -244,4 +244,9 @@ class _DotsGamePageState extends State<DotsGamePage> {
     super.dispose();
     cancleListener();
   }
+
+  // Tabbar 변경에 따라 to block reload
+  @override
+  bool get wantKeepAlive => true;
+
 }

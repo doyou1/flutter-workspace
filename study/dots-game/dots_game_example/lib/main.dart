@@ -1,4 +1,5 @@
-import 'package:dots_game_example/view/dots_game_page.dart';
+import 'package:dots_game_example/view/count_down_page.dart';
+import 'package:dots_game_example/view/random_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 
@@ -26,8 +27,26 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: DotsGamePage(),
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Dots Game Example"),
+          bottom: TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.looks_one), text: "Random"),
+              Tab(icon: Icon(Icons.looks_two), text: "CountDown"),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            RandomPage(),
+            CountDownPage(),
+          ],
+        ),
+      ),
     );
   }
 }
