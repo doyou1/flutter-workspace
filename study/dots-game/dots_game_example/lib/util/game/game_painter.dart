@@ -1,5 +1,5 @@
 import 'package:dots_game_example/util/const.dart';
-import 'package:dots_game_example/view/game_point.dart';
+import 'package:dots_game_example/model/game_point.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 

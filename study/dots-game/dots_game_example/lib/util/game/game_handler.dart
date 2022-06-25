@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:dots_game_example/util/const.dart';
-import 'package:dots_game_example/view/game_point.dart';
+import 'package:dots_game_example/model/game_point.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 // 게임 포인트 좌표 조작 클래스

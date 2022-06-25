@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class SnackbarUtil {
-  static void showWinSnackbar(BuildContext context) async {
+class SnackBarUtil {
+  static void showWinSnackBar(BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("성공!!!"),
@@ -12,7 +12,7 @@ class SnackbarUtil {
     await Future.delayed(const Duration(milliseconds: 1000));
   }
 
-  static void showFailSnackbar(BuildContext context) async {
+  static void showFailSnackBar(BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
           content: Text("실패ㅠㅠㅠ"),
@@ -23,7 +23,7 @@ class SnackbarUtil {
     await Future.delayed(const Duration(milliseconds: 1000));
   }
 
-  static void showRequireCountdoenTimerSnackbar(BuildContext context) async {
+  static void showRequireCountdoenTimerSnackBar(BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
           content: Text("Countdown Timer를 시작해주세요!"),

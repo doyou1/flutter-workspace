@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:dots_game_example/util/SnackbarUtil.dart';
+import 'package:dots_game_example/model/countdown_model.dart';
 import 'package:dots_game_example/util/const.dart';
 import 'package:dots_game_example/util/hive_util.dart';
-import 'package:dots_game_example/view/game_point.dart';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
@@ -11,6 +10,7 @@ import '../main.dart';
 import '../util/game/game_handler.dart';
 import '../util/game/game_painter.dart';
 import '../util/game/game_point_random_generator.dart';
+import '../util/snack_bar_util.dart';
 
 class CountDownPage extends StatefulWidget {
   const CountDownPage({
@@ -23,22 +23,9 @@ class CountDownPage extends StatefulWidget {
 
 class _CountDownPageState extends State<CountDownPage>
     with AutomaticKeepAliveClientMixin<CountDownPage> {
-  // 게임 방법 위젯(조이스틱, 가속도계) 플래그
-  bool? isSwitched;
 
-  // 카운트다운 타이머 관련 설정
-  bool isRunning = false;
-  int second = SECOND;
-  int gameCount = GAME_COUNT;
-  Timer? _countdownTimer;
+  late CountdownModel _model;
 
-  // 게임 좌표들 변수
-  late GamePoint points;
-
-  // 가속도계 이벤트 리스너 관련 변수
-  StreamSubscription<AccelerometerEvent>? _streamSubscription;
-  AccelerometerEvent? accelerometerEvent;
-  Timer? _accelerometerTimer;
 
   @override
   void initState() {
@@ -47,8 +34,9 @@ class _CountDownPageState extends State<CountDownPage>
   }
 
   void init() {
+    _model = CountdownModel();
     // Random Game Point 생성
-    points = GamePointRandomGenerator.getGamePoint();
+    _model.points = GamePointRandomGenerator.getGamePoint();
     // 직전 게임모드 불러오기
     setHiveData();
     // 가속도계 이벤트 리스너 설정
@@ -56,26 +44,26 @@ class _CountDownPageState extends State<CountDownPage>
   }
 
   void setHiveData() async {
-    isSwitched = await HiveUtil.getIsSwitched();
-    isRunning = await HiveUtil.getIsRunning();
-    second = await HiveUtil.getSecond();
-    gameCount = await HiveUtil.getGameCount();
+    _model.isSwitched = await HiveUtil.getIsSwitched();
+    _model.isRunning = await HiveUtil.getIsRunning();
+    _model.second = await HiveUtil.getSecond();
+    _model.gameCount = await HiveUtil.getGameCount();
 
-    if (isRunning) {
+    if (_model.isRunning) {
       startCountdownTimer();
     }
   }
 
   void setAccelerometerListener() {
-    _streamSubscription = accelerometerEvents.listen((event) {
+    _model.streamSubscription = accelerometerEvents.listen((event) {
       setState(() {
-        accelerometerEvent = event;
+        _model.accelerometerEvent = event;
       });
     });
 
-    _accelerometerTimer =
+    _model.accelerometerTimer =
         Timer.periodic(const Duration(milliseconds: MILLISECONDS), (_) {
-      if (isSwitched ?? false) {
+      if (_model.isSwitched ?? false) {
         setState(() {
           step();
         });
@@ -94,7 +82,7 @@ class _CountDownPageState extends State<CountDownPage>
             width: WIDGET_SIZE,
             height: WIDGET_SIZE,
             child: CustomPaint(
-              foregroundPainter: GamePainter(points),
+              foregroundPainter: GamePainter(_model.points),
             ),
           ),
           // 스위치 위젯
@@ -108,10 +96,10 @@ class _CountDownPageState extends State<CountDownPage>
                   child: FittedBox(
                     fit: BoxFit.fill,
                     child: Switch(
-                        value: isSwitched ?? false,
+                        value: _model.isSwitched ?? false,
                         onChanged: (value) {
                           setState(() {
-                            isSwitched = value;
+                            _model.isSwitched = value;
                           });
                         }),
                   ),
@@ -120,14 +108,14 @@ class _CountDownPageState extends State<CountDownPage>
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        if (!isRunning) {
-                          isRunning = true;
+                        if (!_model.isRunning) {
+                          _model.isRunning = true;
                           startCountdownTimer();
                         }
                       });
                     },
-                    child: isRunning
-                        ? Text("$gameCount판남음 Countdown: $second")
+                    child: _model.isRunning
+                        ? Text("${_model.gameCount}판남음 Countdown: ${_model.second}")
                         : Text("Timer Start"),
                   ),
                 ),
@@ -135,7 +123,7 @@ class _CountDownPageState extends State<CountDownPage>
             ),
           ),
           // 게임 방법 위젯(조이스틱, 가속도계)
-          !(isSwitched ?? false) ? buildJoyStick() : buildAccelerometer()
+          !(_model.isSwitched ?? false) ? buildJoyStick() : buildAccelerometer()
         ],
       ),
     );
@@ -153,14 +141,14 @@ class _CountDownPageState extends State<CountDownPage>
               // 상 버튼
               ElevatedButton(
                 onPressed: () {
-                  if (!isRunning) {
-                    SnackbarUtil.showRequireCountdoenTimerSnackbar(context);
+                  if (!_model.isRunning) {
+                    SnackBarUtil.showRequireCountdoenTimerSnackBar(context);
                     return;
                   }
                   setState(() {
-                    if (accelerometerEvent != null) {
-                      final handler = GameHandler(points, accelerometerEvent!);
-                      points = handler.moveToUp().result();
+                    if (_model.accelerometerEvent != null) {
+                      final handler = GameHandler(_model.points, _model.accelerometerEvent!);
+                      _model.points = handler.moveToUp().result();
                       checkGoal(handler.isGoal());
                     }
                   });
@@ -175,14 +163,14 @@ class _CountDownPageState extends State<CountDownPage>
               // 좌 버튼
               ElevatedButton(
                 onPressed: () {
-                  if (!isRunning) {
-                    SnackbarUtil.showRequireCountdoenTimerSnackbar(context);
+                  if (!_model.isRunning) {
+                    SnackBarUtil.showRequireCountdoenTimerSnackBar(context);
                     return;
                   }
                   setState(() {
-                    if (accelerometerEvent != null) {
-                      final handler = GameHandler(points, accelerometerEvent!);
-                      points = handler.moveToLeft().result();
+                    if (_model.accelerometerEvent != null) {
+                      final handler = GameHandler(_model.points, _model.accelerometerEvent!);
+                      _model.points = handler.moveToLeft().result();
                       checkGoal(handler.isGoal());
                     }
                   });
@@ -195,14 +183,14 @@ class _CountDownPageState extends State<CountDownPage>
               // 하 버튼
               ElevatedButton(
                 onPressed: () {
-                  if (!isRunning) {
-                    SnackbarUtil.showRequireCountdoenTimerSnackbar(context);
+                  if (!_model.isRunning) {
+                    SnackBarUtil.showRequireCountdoenTimerSnackBar(context);
                     return;
                   }
                   setState(() {
-                    if (accelerometerEvent != null) {
-                      final handler = GameHandler(points, accelerometerEvent!);
-                      points = handler.moveToDown().result();
+                    if (_model.accelerometerEvent != null) {
+                      final handler = GameHandler(_model.points, _model.accelerometerEvent!);
+                      _model.points = handler.moveToDown().result();
                       checkGoal(handler.isGoal());
                     }
                   });
@@ -215,14 +203,14 @@ class _CountDownPageState extends State<CountDownPage>
               // 우 버튼
               ElevatedButton(
                 onPressed: () {
-                  if (!isRunning) {
-                    SnackbarUtil.showRequireCountdoenTimerSnackbar(context);
+                  if (!_model.isRunning) {
+                    SnackBarUtil.showRequireCountdoenTimerSnackBar(context);
                     return;
                   }
                   setState(() {
-                    if (accelerometerEvent != null) {
-                      final handler = GameHandler(points, accelerometerEvent!);
-                      points = handler.moveToRight().result();
+                    if (_model.accelerometerEvent != null) {
+                      final handler = GameHandler(_model.points, _model.accelerometerEvent!);
+                      _model.points = handler.moveToRight().result();
                       checkGoal(handler.isGoal());
                     }
                   });
@@ -243,7 +231,7 @@ class _CountDownPageState extends State<CountDownPage>
       child: Column(
         children: [
           Text(
-              "x: ${accelerometerEvent?.x ?? 0.0}, y: ${accelerometerEvent?.y ?? 0.0}, z: ${accelerometerEvent?.z ?? 0.0}"),
+              "x: ${_model.accelerometerEvent?.x ?? 0.0}, y: ${_model.accelerometerEvent?.y ?? 0.0}, z: ${_model.accelerometerEvent?.z ?? 0.0}"),
           Text("상하좌우로 움직여보세요!"),
         ],
       ),
@@ -252,13 +240,13 @@ class _CountDownPageState extends State<CountDownPage>
 
   // timer 실행시 호출되는 메서드
   void step() async {
-    if (!isRunning) {
-      // showSnackbar(NOT_WORKING_COUNTDOWN_TIMER_FLAG);
+    if (!_model.isRunning) {
+      // showSnackBar(NOT_WORKING_COUNTDOWN_TIMER_FLAG);
       return;
     }
-    if (accelerometerEvent != null) {
-      final handler = GameHandler(points, accelerometerEvent!);
-      points = handler.step().result();
+    if (_model.accelerometerEvent != null) {
+      final handler = GameHandler(_model.points, _model.accelerometerEvent!);
+      _model.points = handler.step().result();
       checkGoal(handler.isGoal());
     }
   }
@@ -268,7 +256,7 @@ class _CountDownPageState extends State<CountDownPage>
     if (isGoal) {
       resetCountdownTimerConfigByContinue();
       if (isWinning()) {
-        SnackbarUtil.showWinSnackbar(context);
+        SnackBarUtil.showWinSnackBar(context);
         setState(() {
           cancleCountdownTimer();
           resetCountdownTimerConfig();
@@ -279,63 +267,63 @@ class _CountDownPageState extends State<CountDownPage>
   }
 
   void resetCountdownTimerConfig() {
-    _countdownTimer = null;
-    second = SECOND;
-    isRunning = false;
+    _model.countdownTimer = null;
+    _model.second = SECOND;
+    _model.isRunning = false;
     HiveUtil.saveIsRunning(false);
     HiveUtil.saveGameCount(GAME_COUNT);
     HiveUtil.saveSecond(SECOND);
   }
 
   void resetCountdownTimerConfigByContinue() {
-    HiveUtil.saveIsSwitched(isSwitched ?? false);
-    HiveUtil.saveIsRunning(isRunning);
-    HiveUtil.saveSecond(second);
-    HiveUtil.saveGameCount(gameCount - 1);
+    HiveUtil.saveIsSwitched(_model.isSwitched ?? false);
+    HiveUtil.saveIsRunning(_model.isRunning);
+    HiveUtil.saveSecond(_model.second);
+    HiveUtil.saveGameCount(_model.gameCount - 1);
   }
 
   // 가속도계 이벤트 리스너 취소 메서드
   void cancleListener() {
-    if (_streamSubscription != null) {
-      _streamSubscription!.cancel();
-      _streamSubscription = null;
+    if (_model.streamSubscription != null) {
+      _model.streamSubscription!.cancel();
+      _model.streamSubscription = null;
     }
 
-    if (_accelerometerTimer != null) {
-      _accelerometerTimer!.cancel();
-      _accelerometerTimer = null;
+    if (_model.accelerometerTimer != null) {
+      _model.accelerometerTimer!.cancel();
+      _model.accelerometerTimer = null;
     }
   }
 
   void cancleCountdownTimer() {
-    if (_countdownTimer != null) {
-      _countdownTimer!.cancel();
-      _countdownTimer = null;
+    if (_model.countdownTimer != null) {
+      _model.countdownTimer!.cancel();
+      _model.countdownTimer = null;
     }
     resetCountdownTimerConfig();
   }
 
   void startCountdownTimer() {
     const oneSec = Duration(seconds: 1);
-    _countdownTimer = Timer.periodic(oneSec, (timer) {
-      if (second == 0) {
+    _model.countdownTimer = Timer.periodic(oneSec, (timer) {
+      if (_model.second == 0) {
         setState(() {
           timer.cancel();
           resetCountdownTimerConfig();
         });
-        SnackbarUtil.showFailSnackbar(context);
+        SnackBarUtil.showFailSnackBar(context);
         refreshPage();
       } else {
         setState(() {
-          second--;
+          _model.second--;
         });
       }
     });
   }
 
   Future<void> saveCurrentTimerConfig() async {
-    HiveUtil.saveIsRunning(isRunning);
-    HiveUtil.saveSecond(second);
+    HiveUtil.saveIsRunning(_model.isRunning);
+    HiveUtil.saveSecond(_model.second);
   }
 
   @override
@@ -350,7 +338,7 @@ class _CountDownPageState extends State<CountDownPage>
   bool get wantKeepAlive => true;
 
   bool isWinning() {
-    return (gameCount - 1) == 0;
+    return (_model.gameCount - 1) == 0;
   }
 
   void refreshPage() async {

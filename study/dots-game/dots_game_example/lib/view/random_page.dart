@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:dots_game_example/util/const.dart';
 import 'package:dots_game_example/util/hive_util.dart';
-import 'package:dots_game_example/view/game_point.dart';
+import 'package:dots_game_example/model/game_point.dart';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:dots_game_example/view/game_point.dart';
+import 'package:dots_game_example/model/game_point.dart';
 
 import '../const.dart';
 
