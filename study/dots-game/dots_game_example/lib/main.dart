@@ -47,7 +47,12 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
+        bodStreamBuilder<Object>(
+              stream: null,
+              builder: (context, snapshot) {
+                return RandomPage();
+              }
+            )w(
           children: [
             RandomPage(),
             CountDownPage(),
