@@ -32,4 +32,14 @@ class SnackBarUtil {
     );
     await Future.delayed(const Duration(milliseconds: 1000));
   }
+
+  static void showIsSinkHoleSnackBar(BuildContext context) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content: Text("싱크홀에 빠졌습니다! 실패!"),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red),
+    );
+    await Future.delayed(const Duration(milliseconds: 1000));
+  }
 }

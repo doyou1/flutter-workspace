@@ -1,5 +1,7 @@
 import 'package:dots_game_example/view/count_down_page.dart';
+import 'package:dots_game_example/view/multi_goal_page.dart';
 import 'package:dots_game_example/view/random_page.dart';
+import 'package:dots_game_example/view/sink_hole_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 
@@ -31,14 +33,17 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 4,
       initialIndex: index ?? 0,
+      // initialIndex: index ?? 3,
       child: Scaffold(
         appBar: AppBar(
           bottom: TabBar(
             tabs: [
               Tab(icon: Icon(Icons.looks_one), text: "Random"),
               Tab(icon: Icon(Icons.looks_two), text: "CountDown"),
+              Tab(icon: Icon(Icons.looks_3), text: "SinkHole"),
+              Tab(icon: Icon(Icons.looks_4), text: "MultiGoal"),
             ],
           ),
         ),
@@ -46,6 +51,8 @@ class HomePage extends StatelessWidget {
           children: [
             RandomPage(),
             CountDownPage(),
+            SinkHolePage(),
+            MultiGoalPage(),
           ],
         ),
       ),

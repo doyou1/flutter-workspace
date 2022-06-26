@@ -4,15 +4,17 @@ import 'package:dots_game_example/util/const.dart';
 import 'package:dots_game_example/model/game_point.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
-// 게임 포인트 좌표 조작 클래스
-class GameHandler {
-  final GamePoint points;
-  final AccelerometerEvent accelerometerEvent;
+import '../../model/multi_goal_game_point.dart';
 
-  GameHandler(this.points, this.accelerometerEvent);
+// 게임 포인트 좌표 조작 클래스
+class MultiGoalGameHandler {
+  final MultiGoalGamePoint points;
+  AccelerometerEvent accelerometerEvent;
+
+  MultiGoalGameHandler(this.points, this.accelerometerEvent);
 
   // methodchaining
-  GameHandler step() {
+  MultiGoalGameHandler step() {
     if (accelerometerEvent.x < -1.0) {
       moveToUp();
     } else if (-1.0 < accelerometerEvent.x && accelerometerEvent.x < 1.0) {
@@ -28,22 +30,26 @@ class GameHandler {
     } else if (1.0 < accelerometerEvent.y) {
       moveToRight();
     }
-
     return this;
   }
 
   // methodchaining
   // step 결과에 따라 변경된 GamePoint 객체 반환
-  GamePoint result() {
+  MultiGoalGamePoint result() {
     return points;
   }
 
   // methodchaining
-  GameHandler moveToLeft() {
+  MultiGoalGameHandler moveToLeft() {
     int newX = points.me.x - 1;
     if (newX < 0) newX = 0;
 
     if (!isWall(Point<int>(newX, points.me.y))) {
+      if (isCorrectGoal(Point<int>(newX, points.me.y))) {
+      } else if (isWrongGoal(Point<int>(newX, points.me.y))) {
+        return this;
+      }
+
       points.me = Point<int>(newX, points.me.y);
     }
 
@@ -51,38 +57,53 @@ class GameHandler {
   }
 
   // methodchaining
-  GameHandler moveToRight() {
+  MultiGoalGameHandler moveToRight() {
     int newX = points.me.x + 1;
     if (newX > COLUMNS - 1) newX = COLUMNS - 1;
 
     if (!isWall(Point<int>(newX, points.me.y))) {
+      if (isCorrectGoal(Point<int>(newX, points.me.y))) {
+      } else if (isWrongGoal(Point<int>(newX, points.me.y))) {
+        return this;
+      }
       points.me = Point<int>(newX, points.me.y);
     }
+
     return this;
   }
 
   // methodchaining
-  GameHandler moveToUp() {
+  MultiGoalGameHandler moveToUp() {
     int newY = points.me.y - 1;
     if (newY < 0) newY = 0;
+
     if (!isWall(Point<int>(points.me.x, newY))) {
+      if (isCorrectGoal(Point<int>(points.me.x, newY))) {
+      } else if (isWrongGoal(Point<int>(points.me.x, newY))) {
+        return this;
+      }
       points.me = Point<int>(points.me.x, newY);
     }
+
     return this;
   }
 
   // methodchaining
-  GameHandler moveToDown() {
+  MultiGoalGameHandler moveToDown() {
     int newY = points.me.y + 1;
     if (newY > ROWS - 1) newY = ROWS - 1;
     if (!isWall(Point<int>(points.me.x, newY))) {
+      if (isCorrectGoal(Point<int>(points.me.x, newY))) {
+      } else if (isWrongGoal(Point<int>(points.me.x, newY))) {
+        return this;
+      }
       points.me = Point<int>(points.me.x, newY);
     }
     return this;
   }
 
-  bool isGoal() {
-    return (points.me.x == points.goal.x && points.me.y == points.goal.y);
+  bool isSuccess() {
+    return points.goal.isEmpty;
   }
 
   bool isWall(Point<int> newPoint) {
@@ -97,5 +118,26 @@ class GameHandler {
       if (points.me.x == s.x && points.me.y == s.y) return true;
     }
     return false;
+  }
+
+  bool isCorrectGoal(Point<int> newPoint) {
+    int correctGoalX = points.goal[0].point.x;
+    int correctGoalY = points.goal[0].point.y;
+    if (newPoint.x == correctGoalX && newPoint.y == correctGoalY) {
+      points.goal.removeAt(0);
+      return true;
+    }
+    return false;
+  }
+
+  // 지금 들어가면 안되는 골에 들어 갔을 때
+  bool isWrongGoal(Point<int> newPoint) {
+    if (points.goal.length == 1) return false;
+    bool result = false;
+    for (int i = 0; i < points.goal.length; i++) {
+      Point<int> g = points.goal[i].point;
+      if (newPoint.x == g.x && newPoint.y == g.y) result = true;
+    }
+    return result;
   }
 }
