@@ -1,8 +1,8 @@
-import 'package:dots_game_devide_example/controller/joy_stick_sub/joy_stick_controller.dart';
-import 'package:dots_game_devide_example/view/joy_stick_sub/joy_stick_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:dots_game_devide_example/controller/joy_stick_controller.dart';
+import 'package:dots_game_devide_example/view/joy_stick_sub/joy_stick_view.dart';
 import '../../util/const.dart';
 
 class JoyStickRandomPage extends StatefulWidget {
@@ -13,12 +13,10 @@ class JoyStickRandomPage extends StatefulWidget {
 }
 
 class _JoyStickRandomPageState extends State<JoyStickRandomPage> {
-  // final c = Get.put(JoyStickController());
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-        init: JoyStickController(),
+        init: Get.find<JoyStickController>(),
         builder: (JoyStickController c) {
           return Container(
             child: Column(
@@ -29,6 +27,9 @@ class _JoyStickRandomPageState extends State<JoyStickRandomPage> {
                   height: WIDGET_SIZE,
                   child: Obx(() => c.painter),
                 ),
+                SizedBox(
+                  height: SIZEDBOX_HEIGHT,
+                ),
                 JoyStickView(),
               ],
             ),
@@ -36,5 +37,8 @@ class _JoyStickRandomPageState extends State<JoyStickRandomPage> {
         });
   }
 
-
+  @override
+  void dispose() async {
+    super.dispose();
+  }
 }

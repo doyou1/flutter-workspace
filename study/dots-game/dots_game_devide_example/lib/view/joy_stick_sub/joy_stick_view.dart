@@ -1,14 +1,18 @@
-import 'package:dots_game_devide_example/controller/joy_stick_sub/joy_stick_controller.dart';
+import 'package:dots_game_devide_example/controller/joy_stick_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class JoyStickView extends StatelessWidget {
-  JoyStickView({Key? key}) : super(key: key);
+  JoyStickView({this.isRunning = true, Key? key}) : super(key: key);
 
   final c = Get.find<JoyStickController>();
 
+  bool isRunning;
+
   @override
   Widget build(BuildContext context) {
+    c.context = context;
+
     return Container(
       height: 150,
       child: Column(
@@ -18,7 +22,7 @@ class JoyStickView extends StatelessWidget {
             children: [
               // 상 버튼
               ElevatedButton(
-                onPressed: c.moveToUp,
+                onPressed: isRunning ? c.moveToUp : null,
                 child: const Icon(Icons.arrow_upward),
               ),
             ],
@@ -28,7 +32,7 @@ class JoyStickView extends StatelessWidget {
             children: [
               // 좌 버튼
               ElevatedButton(
-                onPressed: c.moveToLeft,
+                onPressed: isRunning ? c.moveToLeft : null,
                 child: const Icon(Icons.arrow_back),
               ),
               const SizedBox(
@@ -36,7 +40,7 @@ class JoyStickView extends StatelessWidget {
               ),
               // 하 버튼
               ElevatedButton(
-                onPressed: c.moveToDown,
+                onPressed: isRunning ? c.moveToDown : null,
                 child: const Icon(Icons.arrow_downward),
               ),
               const SizedBox(
@@ -44,7 +48,7 @@ class JoyStickView extends StatelessWidget {
               ),
               // 우 버튼
               ElevatedButton(
-                onPressed: c.moveToRight,
+                onPressed: isRunning ? c.moveToRight : null,
                 child: const Icon(Icons.arrow_forward),
               ),
             ],

@@ -9,6 +9,7 @@ const JOY_STICK_MULTI_GOAL_CONTROLLER = 4;
 const CONTROLLER_LENGTH = 4;
 
 const WIDGET_SIZE = 300.0;
+const SIZEDBOX_HEIGHT = 10.0;
 
 const int ROWS = 15;
 const int COLUMNS = 15;
@@ -21,5 +22,16 @@ const WALL_FLAG = -2;
 const SINK_HOLE_FLAG = -3;
 const OK_FLAG = -4;
 
+const WIN_SNACK_BAR_TEXT = "성공!!!";
+const FAIL_SNACK_BAR_TEXT = "실패ㅠㅠㅠ";
+const REQUIRE_COUNT_DOWN_SNACK_BAR_TEXT = "Countdown Timer를 시작해주세요!";
+const IS_SINK_HOLE_SNACK_BAR_TEXT = "싱크홀에 빠졌습니다! 실패!";
+const COUNT_DOWN_SUCCESS_SNACK_BAR_TEXT = "Count Down Game Success!";
+const COUNT_DOWN_FAIL_SNACK_BAR_TEXT = "Count Down Game Failㅠㅠ";
 
 
+const START_COUNT_DOWN_TEXT = "Start CountDown!";
+const STOP_COUNT_DOWN_TEXT = "Stop CountDown!";
+
+const COUNT_DOWN_SECONDS = 15;
+const GAME_COUNT = 5;

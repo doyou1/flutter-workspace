@@ -1,10 +1,12 @@
+import 'package:dots_game_devide_example/controller/count_down_controller.dart';
 import 'package:dots_game_devide_example/util/const.dart';
 import 'package:dots_game_devide_example/util/game/game_point_random_generator.dart';
+import 'package:dots_game_devide_example/util/snack_bar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:math';
-import '../../util/game/painter/random_painter.dart';
-import '../../util/game/point_checker/joy_stick_point_checker.dart';
+import '../util/game/painter/random_painter.dart';
+import '../util/game/point_checker/joy_stick_point_checker.dart';
 
 class JoyStickController extends GetxController {
   final count = 0.obs;
@@ -14,6 +16,7 @@ class JoyStickController extends GetxController {
   );
 
   late var checker = JoyStickPointChecker(points.value);
+  late BuildContext context;
 
   // 상
   void moveToUp() {
@@ -51,8 +54,10 @@ class JoyStickController extends GetxController {
     switch (flag) {
       case GOAL_FLAG:
         // goal
+        SnackBarUtil.showWinSnackBar(context);
         // 이동 -> 스낵바(성공) -> 페이지 리빌드
         resetPoint();
+        countDownProcess();
         break;
       case WALL_FLAG:
         // wall
@@ -60,9 +65,9 @@ class JoyStickController extends GetxController {
         break;
       case SINK_HOLE_FLAG:
         // SinkHole
+        SnackBarUtil.showIsSinkHoleSnackBar(context);
         // 이동 -> 스낵바(실패) -> 페이지 리빌드
         resetPoint();
-        // Get.snackbar("Fail", "실패!!", snackPosition: SnackPosition.BOTTOM);
         break;
       case OK_FLAG:
         // OK
@@ -80,5 +85,14 @@ class JoyStickController extends GetxController {
     );
     checker = JoyStickPointChecker(points.value);
     points.refresh();
+  }
+
+  void countDownProcess() {
+    final cc = Get.find<CountDownController>();
+    if(!cc.isClosed) {
+      cc.gameCount.value--;
+      cc.gameCount.refresh();
+      cc.checkIsSuccess();
+    }
   }
 }

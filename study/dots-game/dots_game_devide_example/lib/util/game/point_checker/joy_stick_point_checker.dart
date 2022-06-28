@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:dots_game_devide_example/controller/joy_stick_sub/joy_stick_controller.dart';
+import 'package:dots_game_devide_example/controller/joy_stick_controller.dart';
 import 'package:dots_game_devide_example/view/joy_stick_page.dart';
 import 'package:get/get.dart';
 
