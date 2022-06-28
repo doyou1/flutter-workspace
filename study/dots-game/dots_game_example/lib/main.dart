@@ -12,10 +12,8 @@ Future<void> main()  async {
   await Hive.initFlutter();
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -24,12 +22,9 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class HomePage extends StatelessWidget {
-
   const HomePage({this.index});
   final int? index;
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -47,12 +42,7 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-        bodStreamBuilder<Object>(
-              stream: null,
-              builder: (context, snapshot) {
-                return RandomPage();
-              }
-            )w(
+        body: TabBarView(
           children: [
             RandomPage(),
             CountDownPage(),
@@ -64,6 +54,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-
-

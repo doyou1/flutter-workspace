@@ -3,6 +3,7 @@ import 'package:dots_game_devide_example/view/joy_stick_sub/joy_stick_multi_goal
 import 'package:dots_game_devide_example/view/joy_stick_sub/joy_stick_random_page.dart';
 import 'package:dots_game_devide_example/view/joy_stick_sub/joy_stick_sink_hole_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class JoyStickPage extends StatefulWidget {
   const JoyStickPage({Key? key}) : super(key: key);
@@ -11,7 +12,8 @@ class JoyStickPage extends StatefulWidget {
   State<JoyStickPage> createState() => _JoyStickPageState();
 }
 
-class _JoyStickPageState extends State<JoyStickPage> {
+class _JoyStickPageState extends State<JoyStickPage> with AutomaticKeepAliveClientMixin<JoyStickPage> {
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -41,4 +43,7 @@ class _JoyStickPageState extends State<JoyStickPage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
