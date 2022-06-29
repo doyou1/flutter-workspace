@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:dots_game_devide_example/controller/joy_stick_controller.dart';
-import 'package:dots_game_devide_example/view/joy_stick_sub/joy_stick_view.dart';
-import '../../util/const.dart';
+import 'package:dots_game_devide_example/view/joy_stick_sub/joy_stick/joy_stick_view.dart';
+import '../../../util/const.dart';
 
 class JoyStickRandomPage extends StatefulWidget {
   const JoyStickRandomPage({Key? key}) : super(key: key);

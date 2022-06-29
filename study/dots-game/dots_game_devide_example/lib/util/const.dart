@@ -1,5 +1,10 @@
-const SELECT_JOYSTICK_BUTTON_TEXT = "JOYSTICK";
+import 'package:flutter/material.dart';
+
+const SELECT_JOY_STICK_BUTTON_TEXT = "JOYSTICK";
 const SELECT_ACCELEROMETER_BUTTON_TEXT = "ACCELEROMETER";
+const RANDOM_TAP_TEXT = "Random";
+const COUNT_DOWN_TAP_TEXT = "Count Down";
+const MULTI_GOAL_TAP_TEXT = "Multi Goal";
 
 const JOY_STICK_RANDOM_CONTROLLER = 1;
 const JOY_STICK_COUNT_DOWN_CONTROLLER = 2;
@@ -16,11 +21,14 @@ const int COLUMNS = 15;
 
 const WALL_COUNT = 5;
 const SINK_HOLE_COUNT = 5;
+const GOAL_COUNT = 7;
 
 const GOAL_FLAG = -1;
 const WALL_FLAG = -2;
 const SINK_HOLE_FLAG = -3;
 const OK_FLAG = -4;
+const CORRECT_GOAL_FLAG = -5;
+const WRONG_GOAL_FLAG = -6;
 
 const WIN_SNACK_BAR_TEXT = "성공!!!";
 const FAIL_SNACK_BAR_TEXT = "실패ㅠㅠㅠ";
@@ -35,3 +43,13 @@ const STOP_COUNT_DOWN_TEXT = "Stop CountDown!";
 
 const COUNT_DOWN_SECONDS = 15;
 const GAME_COUNT = 5;
+
+const List GoalColors = [
+  Colors.red,
+  Colors.orange,
+  Colors.yellow,
+  Colors.green,
+  Colors.blue,
+  Colors.indigo,
+  Colors.purple,
+];

@@ -14,12 +14,12 @@ const int FAIL_FLAG = -2;
 const int NOT_WORKING_COUNTDOWN_TIMER_FLAG = -3;
 const int MILLISECONDS = 200;
 
-List GoalColors = [
-  Colors.red,
-  Colors.orange,
-  Colors.yellow,
-  Colors.green,
-  Colors.blue,
-  Colors.indigo,
-  Colors.purple,
-];
+  const List GoalColors = [
+    Colors.red,
+    Colors.orange,
+    Colors.yellow,
+    Colors.green,
+    Colors.blue,
+    Colors.indigo,
+    Colors.purple,
+  ];

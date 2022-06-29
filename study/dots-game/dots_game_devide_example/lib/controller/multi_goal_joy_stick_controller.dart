@@ -10,14 +10,14 @@ import 'dart:math';
 import '../util/game/painter/random_painter.dart';
 import '../util/game/point_checker/point_checker.dart';
 
-class JoyStickController extends GetxController {
+class MultiGoalJoyStickController extends GetxController {
   final count = 0.obs;
-  var points = GamePointRandomGenerator.getGamePoint().obs;
+  var points = GamePointRandomGenerator.getMultiGoalGamePoint().obs;
   late var painter = CustomPaint(
-    foregroundPainter: RandomPainter(points.value),
+    foregroundPainter: MultiGoalPainter(points.value),
   );
 
-  late var checker = PointChecker(points.value);
+  late var checker = MultiGoalPointChecker(points.value);
   late BuildContext context;
 
   // 상
@@ -54,13 +54,19 @@ class JoyStickController extends GetxController {
 
   void actionByFlag(int flag, Point<int> newMe) {
     switch (flag) {
-      case GOAL_FLAG:
+      case WRONG_GOAL_FLAG:
         // goal
-        SnackBarUtil.showWinSnackBar(context);
-        // 이동 -> 스낵바(성공) -> 페이지 리빌드
-        resetPoint();
-        countDownProcess();
+        // SnackBarUtil.showWinSnackBar(context);
+        // // 이동 -> 스낵바(성공) -> 페이지 리빌드
+        // resetPoint();
         break;
+      case CORRECT_GOAL_FLAG:
+        // goal
+        // SnackBarUtil.showWinSnackBar(context);
+        // // 이동 -> 스낵바(성공) -> 페이지 리빌드
+        // resetPoint();
+        break;
+
       case WALL_FLAG:
         // wall
         // 아무 변화 X
@@ -81,20 +87,11 @@ class JoyStickController extends GetxController {
   }
 
   void resetPoint() {
-    points.value = GamePointRandomGenerator.getGamePoint();
+    points.value = GamePointRandomGenerator.getMultiGoalGamePoint();
     painter = CustomPaint(
-      foregroundPainter: RandomPainter(points.value),
+      foregroundPainter: MultiGoalPainter(points.value),
     );
-    checker = PointChecker(points.value);
+    checker = MultiGoalPointChecker(points.value);
     points.refresh();
-  }
-
-  void countDownProcess() {
-    final cc = Get.find<CountDownController>();
-    if(!cc.isClosed) {
-      cc.gameCount.value--;
-      cc.gameCount.refresh();
-      cc.checkIsSuccess();
-    }
   }
 }

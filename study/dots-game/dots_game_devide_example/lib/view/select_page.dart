@@ -19,7 +19,7 @@ class SelectPage extends StatelessWidget {
             ElevatedButton(onPressed: () {
               NavigatorUtil.moveToJoyStickPage(context);
               // Get.to(JoyStickPage());
-            }, child: const Text(SELECT_JOYSTICK_BUTTON_TEXT)),
+            }, child: const Text(SELECT_JOY_STICK_BUTTON_TEXT)),
             ElevatedButton(onPressed: () {
               NavigatorUtil.moveToAccelerometerPage(context);
               // Get.to(AccelerometerPage());

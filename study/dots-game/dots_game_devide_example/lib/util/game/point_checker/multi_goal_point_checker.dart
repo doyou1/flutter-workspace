@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:dots_game_devide_example/controller/joy_stick_controller.dart';
+import 'package:dots_game_devide_example/model/multi_goal_game_point.dart';
+import 'package:dots_game_devide_example/util/game/point_checker/point_checker.dart';
 import 'package:dots_game_devide_example/view/joy_stick_page.dart';
 import 'package:get/get.dart';
 
@@ -8,10 +10,10 @@ import '../../../model/game_point.dart';
 import '../../const.dart';
 
 // 게임 포인트 좌표 확인 클래스
-class JoyStickPointChecker {
-  final GamePoint points;
+class MultiGoalPointChecker {
+  final MultiGoalGamePoint points;
 
-  JoyStickPointChecker(this.points);
+  MultiGoalPointChecker(this.points);
 
   // points.value를 매번 쓰는게 불편해서
   // 변하지 않는 goal, wall, sinkhole은 따로 변수에 담아둔다.
@@ -24,8 +26,11 @@ class JoyStickPointChecker {
   int step(Point<int> newPoint) {
     _newPoint = newPoint;
 
-    if (isGoal()) {
-      return GOAL_FLAG;
+    if (isWrongGoal()) {
+      return WRONG_GOAL_FLAG;
+    }
+    else if (isCorrectGoal()) {
+      return CORRECT_GOAL_FLAG;
     } else if (isWall()) {
       return WALL_FLAG;
     } else if (isSinkHole()) {
@@ -38,9 +43,16 @@ class JoyStickPointChecker {
     }
   }
 
-  bool isGoal() {
-    return (_newPoint.x == goal.x && _newPoint.y == goal.y);
+  bool isWrongGoal() {
+    // return (_newPoint.x == goal.x && _newPoint.y == goal.y);
+    return false;
   }
+
+  bool isCorrectGoal() {
+    // return (_newPoint.x == goal.x && _newPoint.y == goal.y);
+    return false;
+  }
+
 
   bool isWall() {
     for (Point<int> w in wall) {
