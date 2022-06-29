@@ -18,7 +18,7 @@ class _JoyStickCountDownPageState extends State<JoyStickCountDownPage> {
   @override
   Widget build(BuildContext context) {
     final cc = Get.find<CountDownController>();
-
+    cc.context = context;
     return GetBuilder(
         init: Get.find<JoyStickController>(),
         builder: (JoyStickController c) {

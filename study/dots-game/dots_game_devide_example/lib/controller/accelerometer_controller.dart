@@ -146,8 +146,9 @@ class AccelerometerController extends GetxController {
   }
 
   void countDownProcess() {
-    final cc = Get.find<CountDownController>();
-    if (!cc.isClosed) {
+
+    if(Get.isRegistered<CountDownController>()) {
+      final cc = Get.find<CountDownController>();
       cc.gameCount.value--;
       cc.gameCount.refresh();
       cc.checkIsSuccess();

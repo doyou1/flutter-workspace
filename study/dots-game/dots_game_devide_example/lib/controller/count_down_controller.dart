@@ -19,9 +19,12 @@ class CountDownController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final cc = Get.find<AccelerometerController>();
-    cc.isCountDownPage.value = true;
-    cc.isCountDownPage.refresh();
+
+    if(Get.isRegistered<AccelerometerController>()) {
+      final cc = Get.find<AccelerometerController>();
+      cc.isCountDownPage.value = true;
+      cc.isCountDownPage.refresh();
+    }
   }
 
   void toggle() {
@@ -39,9 +42,11 @@ class CountDownController extends GetxController {
   void startCountDown() {
     resetGameState();
 
-    final cc = Get.find<AccelerometerController>();
-    cc.isRunning.value = true;
-    cc.isRunning.refresh();
+    if(Get.isRegistered<AccelerometerController>()) {
+      final cc = Get.find<AccelerometerController>();
+      cc.isRunning.value = true;
+      cc.isRunning.refresh();
+    }
 
     timer ??= Timer.periodic(Duration(seconds: 1), (timer) {
       if (currentSecond.value == 0) {
