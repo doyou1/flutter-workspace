@@ -1,14 +1,18 @@
-import 'package:dots_game_devide_example/controller/count_down_controller.dart';
-import 'package:dots_game_devide_example/util/const.dart';
+import 'dart:async';
+import 'dart:math';
 import 'package:dots_game_devide_example/util/game/game_point_random_generator.dart';
 import 'package:dots_game_devide_example/util/snack_bar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:math';
+import 'package:sensors_plus/sensors_plus.dart';
+
+import '../util/const.dart';
 import '../util/game/painter/random_painter.dart';
 import '../util/game/point_checker/point_checker.dart';
+import 'count_down_controller.dart';
 
-class JoyStickController extends GetxController {
+class AccelerometerController extends GetxController {
+
   final count = 0.obs;
   var points = GamePointRandomGenerator.getGamePoint().obs;
   late var painter = CustomPaint(
@@ -17,6 +21,47 @@ class JoyStickController extends GetxController {
 
   late var checker = PointChecker(points.value);
   late BuildContext context;
+
+  StreamSubscription? streamSubscription;
+  var accelerometerEvent = AccelerometerEvent(0.0, 0.0, 0.0).obs;
+  Timer? timer;
+
+  void startAccelerometerEvent() {
+    streamSubscription = accelerometerEvents.listen((event) {
+        accelerometerEvent.value = event;
+        accelerometerEvent.refresh();
+    });
+
+    timer = Timer.periodic(const Duration(milliseconds: 1000), (_) {
+        step();
+    });
+
+  }
+
+  void closeAccelerometerEvent() {
+    streamSubscription?.cancel();
+    timer?.cancel();
+  }
+
+  void step() {
+    final current = accelerometerEvent.value;
+
+    if (current.x < -1.0) {
+      moveToUp();
+    } else if (-1.0 < current.x && current.x < 1.0) {
+      // no action
+    } else if (1.0 < current.x) {
+      moveToDown();
+    }
+
+    if (current.y < -1.0) {
+      moveToLeft();
+    } else if (-1.0 < current.y && current.y < 1.0) {
+      // no action
+    } else if (1.0 < current.y) {
+      moveToRight();
+    }
+  }
 
   // 상
   void moveToUp() {
@@ -62,25 +107,25 @@ class JoyStickController extends GetxController {
   void actionByFlag(int flag, Point<int> newMe) {
     switch (flag) {
       case GOAL_FLAG:
-        // goal
+      // goal
         SnackBarUtil.showWinSnackBar(context);
         // 이동 -> 스낵바(성공) -> 페이지 리빌드
         resetPoint();
         countDownProcess();
         break;
       case WALL_FLAG:
-        // wall
-        // 아무 변화 X
+      // wall
+      // 아무 변화 X
         break;
       case SINK_HOLE_FLAG:
-        // SinkHole
+      // SinkHole
         SnackBarUtil.showIsSinkHoleSnackBar(context);
         // 이동 -> 스낵바(실패) -> 페이지 리빌드
         resetPoint();
         break;
       case OK_FLAG:
-        // OK
-        // 이동
+      // OK
+      // 이동
         points.value.me = newMe;
         points.refresh();
         break;
@@ -103,5 +148,10 @@ class JoyStickController extends GetxController {
       cc.gameCount.refresh();
       cc.checkIsSuccess();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

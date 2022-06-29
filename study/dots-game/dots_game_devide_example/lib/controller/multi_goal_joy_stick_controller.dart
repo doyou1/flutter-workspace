@@ -23,7 +23,9 @@ class MultiGoalJoyStickController extends GetxController {
   // 상
   void moveToUp() {
     final oldMe = points.value.me;
-    final newMe = Point<int>(oldMe.x, oldMe.y - 1);
+    int newY = points.value.me.y - 1;
+    if (newY < 0) newY = 0;
+    final newMe = Point<int>(oldMe.x, newY);
     final flag = checker.step(newMe);
     actionByFlag(flag, newMe);
   }
@@ -31,7 +33,9 @@ class MultiGoalJoyStickController extends GetxController {
   // 하
   void moveToDown() {
     final oldMe = points.value.me;
-    final newMe = Point<int>(oldMe.x, oldMe.y + 1);
+    int newY = points.value.me.y + 1;
+    if (newY > ROWS - 1) newY = ROWS - 1;
+    final newMe = Point<int>(oldMe.x, newY);
     final flag = checker.step(newMe);
     actionByFlag(flag, newMe);
   }
@@ -39,7 +43,9 @@ class MultiGoalJoyStickController extends GetxController {
   // 좌
   void moveToLeft() {
     final oldMe = points.value.me;
-    final newMe = Point<int>(oldMe.x - 1, oldMe.y);
+    int newX = oldMe.x - 1;
+    if (newX < 0) newX = 0;
+    final newMe = Point<int>(newX, oldMe.y);
     final flag = checker.step(newMe);
     actionByFlag(flag, newMe);
   }
@@ -47,24 +53,32 @@ class MultiGoalJoyStickController extends GetxController {
   // 우
   void moveToRight() {
     final oldMe = points.value.me;
-    final newMe = Point<int>(oldMe.x + 1, oldMe.y);
+    int newX = oldMe.x + 1;
+    if (newX > COLUMNS - 1) newX = COLUMNS - 1;
+    final newMe = Point<int>(newX, oldMe.y);
+
     final flag = checker.step(newMe);
     actionByFlag(flag, newMe);
   }
 
   void actionByFlag(int flag, Point<int> newMe) {
+
     switch (flag) {
       case WRONG_GOAL_FLAG:
-        // goal
-        // SnackBarUtil.showWinSnackBar(context);
-        // // 이동 -> 스낵바(성공) -> 페이지 리빌드
-        // resetPoint();
+        // wrong goal
+        // 아무 변화 X
         break;
       case CORRECT_GOAL_FLAG:
-        // goal
-        // SnackBarUtil.showWinSnackBar(context);
+        // correct goal
         // // 이동 -> 스낵바(성공) -> 페이지 리빌드
-        // resetPoint();
+        points.value.goal.removeAt(0);
+        points.value.me = newMe;
+        points.refresh();
+        if(points.value.goal.isEmpty) {
+          SnackBarUtil.showWinSnackBar(context);
+          // 이동 -> 스낵바(성공) -> 페이지 리빌드
+          resetPoint();
+        }
         break;
 
       case WALL_FLAG:

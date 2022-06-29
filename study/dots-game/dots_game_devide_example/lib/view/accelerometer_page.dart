@@ -2,6 +2,8 @@ import 'package:dots_game_devide_example/view/accelerometer_sub/accelerometer_co
 import 'package:dots_game_devide_example/view/accelerometer_sub/accelerometer_multi_goal_page.dart';
 import 'package:dots_game_devide_example/view/accelerometer_sub/accelerometer_random_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controller/accelerometer_controller.dart';
 import '../util/const.dart';
 
 class AccelerometerPage extends StatefulWidget {
@@ -13,6 +15,12 @@ class AccelerometerPage extends StatefulWidget {
 
 class _AccelerometerPageState extends State<AccelerometerPage> {
   Widget _page = AccelerometerRandomPage();
+
+  @override
+  void initState() {
+    super.initState();
+    Get.put(AccelerometerController());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,19 +48,32 @@ class _AccelerometerPageState extends State<AccelerometerPage> {
   }
 
   void changeWidget(int index) async {
+    await Get.deleteAll();
 
     setState(() {
       switch (index) {
         case 0:
+          Get.put(AccelerometerController());
           _page = AccelerometerRandomPage();
           break;
         case 1:
+          Get.put(AccelerometerController());
           _page = AccelerometerCountDownPage();
           break;
         case 2:
+          Get.put(AccelerometerController());
           _page = AccelerometerMultiGoalPage();
           break;
       }
     });
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void dispose() async {
+    super.dispose();
+    await Get.deleteAll();
   }
 }

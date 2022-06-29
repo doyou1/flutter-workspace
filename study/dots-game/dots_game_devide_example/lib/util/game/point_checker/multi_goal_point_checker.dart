@@ -28,8 +28,7 @@ class MultiGoalPointChecker {
 
     if (isWrongGoal()) {
       return WRONG_GOAL_FLAG;
-    }
-    else if (isCorrectGoal()) {
+    } else if (isCorrectGoal()) {
       return CORRECT_GOAL_FLAG;
     } else if (isWall()) {
       return WALL_FLAG;
@@ -44,15 +43,24 @@ class MultiGoalPointChecker {
   }
 
   bool isWrongGoal() {
-    // return (_newPoint.x == goal.x && _newPoint.y == goal.y);
-    return false;
+    if (points.goal.length == 1) return false;
+    bool result = false;
+    for (int i = 1; i < points.goal.length; i++) {
+      Point<int> g = points.goal[i].point;
+      if (_newPoint.x == g.x && _newPoint.y == g.y) result = true;
+    }
+    return result;
   }
 
   bool isCorrectGoal() {
-    // return (_newPoint.x == goal.x && _newPoint.y == goal.y);
+    int correctGoalX = points.goal[0].point.x;
+    int correctGoalY = points.goal[0].point.y;
+    if (_newPoint.x == correctGoalX && _newPoint.y == correctGoalY) {
+      // points.goal.removeAt(0);
+      return true;
+    }
     return false;
   }
-
 
   bool isWall() {
     for (Point<int> w in wall) {

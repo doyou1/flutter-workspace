@@ -18,6 +18,7 @@ class JoyStickPage extends StatefulWidget {
 class _JoyStickPageState extends State<JoyStickPage>
     with AutomaticKeepAliveClientMixin<JoyStickPage> {
   Widget _page = JoyStickRandomPage();
+
   @override
   void initState() {
     super.initState();
