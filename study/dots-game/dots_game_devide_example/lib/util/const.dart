@@ -53,3 +53,6 @@ const List GoalColors = [
   Colors.indigo,
   Colors.purple,
 ];
+
+const DURATION_MILLISECONDS = 350;
+const TINY_DIFF = 1.0;

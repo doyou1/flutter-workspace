@@ -7,19 +7,22 @@ import 'package:get/get.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 import '../util/const.dart';
+import '../util/game/painter/multi_goal_painter.dart';
 import '../util/game/painter/random_painter.dart';
+import '../util/game/point_checker/multi_goal_point_checker.dart';
 import '../util/game/point_checker/point_checker.dart';
 import 'count_down_controller.dart';
 
-class AccelerometerController extends GetxController {
+class MultiGoalAccelerometerController extends GetxController {
   final count = 0.obs;
-  var points = GamePointRandomGenerator.getGamePoint().obs;
+  var points = GamePointRandomGenerator.getMultiGoalGamePoint().obs;
   late var painter = CustomPaint(
-    foregroundPainter: RandomPainter(points.value),
+    foregroundPainter: MultiGoalPainter(points.value),
   );
 
-  late var checker = PointChecker(points.value);
+  late var checker = MultiGoalPointChecker(points.value);
   late BuildContext context;
+
   final isCountDownPage = false.obs;
   final isRunning = false.obs;
 
@@ -110,26 +113,36 @@ class AccelerometerController extends GetxController {
 
   void actionByFlag(int flag, Point<int> newMe) {
     switch (flag) {
-      case GOAL_FLAG:
-        // goal
-        SnackBarUtil.showWinSnackBar(context);
-        // 이동 -> 스낵바(성공) -> 페이지 리빌드
-        resetPoint();
-        countDownProcess();
+      case WRONG_GOAL_FLAG:
+      // wrong goal
+      // 아무 변화 X
         break;
+      case CORRECT_GOAL_FLAG:
+      // correct goal
+      // // 이동 -> 스낵바(성공) -> 페이지 리빌드
+        points.value.goal.removeAt(0);
+        points.value.me = newMe;
+        points.refresh();
+        if(points.value.goal.isEmpty) {
+          SnackBarUtil.showWinSnackBar(context);
+          // 이동 -> 스낵바(성공) -> 페이지 리빌드
+          resetPoint();
+        }
+        break;
+
       case WALL_FLAG:
-        // wall
-        // 아무 변화 X
+      // wall
+      // 아무 변화 X
         break;
       case SINK_HOLE_FLAG:
-        // SinkHole
+      // SinkHole
         SnackBarUtil.showIsSinkHoleSnackBar(context);
         // 이동 -> 스낵바(실패) -> 페이지 리빌드
         resetPoint();
         break;
       case OK_FLAG:
-        // OK
-        // 이동
+      // OK
+      // 이동
         points.value.me = newMe;
         points.refresh();
         break;
@@ -137,21 +150,12 @@ class AccelerometerController extends GetxController {
   }
 
   void resetPoint() {
-    points.value = GamePointRandomGenerator.getGamePoint();
+    points.value = GamePointRandomGenerator.getMultiGoalGamePoint();
     painter = CustomPaint(
-      foregroundPainter: RandomPainter(points.value),
+      foregroundPainter: MultiGoalPainter(points.value),
     );
-    checker = PointChecker(points.value);
+    checker = MultiGoalPointChecker(points.value);
     points.refresh();
-  }
-
-  void countDownProcess() {
-    final cc = Get.find<CountDownController>();
-    if (!cc.isClosed) {
-      cc.gameCount.value--;
-      cc.gameCount.refresh();
-      cc.checkIsSuccess();
-    }
   }
 
   @override

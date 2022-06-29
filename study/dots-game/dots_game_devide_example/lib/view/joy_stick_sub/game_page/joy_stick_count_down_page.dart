@@ -38,8 +38,7 @@ class _JoyStickCountDownPageState extends State<JoyStickCountDownPage> {
                 SizedBox(
                   height: SIZEDBOX_HEIGHT,
                 ),
-                GestureDetector(
-                    child: Obx(() => JoyStickView(isRunning: cc.isRunning.value))),
+              Obx(() => JoyStickView(isRunning: cc.isRunning.value)),
               ],
             ),
           );

@@ -2,6 +2,7 @@ import 'package:dots_game_devide_example/util/const.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../controller/accelerometer_controller.dart';
 import '../../controller/count_down_controller.dart';
 
 class CountDownView extends StatelessWidget {

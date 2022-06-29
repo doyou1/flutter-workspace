@@ -1,59 +1,31 @@
+import 'package:dots_game_devide_example/controller/accelerometer_controller.dart';
+import 'package:dots_game_devide_example/controller/multi_goal_accelerometer_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../controller/multi_goal_joy_stick_controller.dart';
-
-class MultiGoalJoyStickView extends StatelessWidget {
-  MultiGoalJoyStickView({Key? key}) : super(key: key);
-
-  final c = Get.find<MultiGoalJoyStickController>();
+class MultiGoalAccelerometerView extends StatelessWidget {
+  MultiGoalAccelerometerView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    c.context = context;
-
-    return Container(
-      height: 150,
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 상 버튼
-              ElevatedButton(
-                onPressed: c.moveToUp,
-                child: const Icon(Icons.arrow_upward),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 좌 버튼
-              ElevatedButton(
-                onPressed: c.moveToLeft,
-                child: const Icon(Icons.arrow_back),
-              ),
-              const SizedBox(
-                width: 10.0,
-              ),
-              // 하 버튼
-              ElevatedButton(
-                onPressed: c.moveToDown,
-                child: const Icon(Icons.arrow_downward),
-              ),
-              const SizedBox(
-                width: 10.0,
-              ),
-              // 우 버튼
-              ElevatedButton(
-                onPressed: c.moveToRight,
-                child: const Icon(Icons.arrow_forward),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return GetBuilder<MultiGoalAccelerometerController>(
+        init: Get.find<MultiGoalAccelerometerController>(),
+        builder: (MultiGoalAccelerometerController c) {
+          c.context = context;
+          c.startAccelerometerEvent();
+          return Container(
+            height: 150,
+            child: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                Obx(() => Text(
+                    "x: ${c.accelerometerEvent.value.x}, y: ${c.accelerometerEvent.value.y}, z: ${c.accelerometerEvent.value.z}"),
+                ),
+                Text("상하좌우로 움직여보세요!"),
+              ]),
+            ),
+          );
+        });
   }
 }

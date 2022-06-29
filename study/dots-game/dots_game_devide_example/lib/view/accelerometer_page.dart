@@ -1,9 +1,11 @@
+import 'package:dots_game_devide_example/controller/multi_goal_accelerometer_controller.dart';
 import 'package:dots_game_devide_example/view/accelerometer_sub/accelerometer_count_down_page.dart';
 import 'package:dots_game_devide_example/view/accelerometer_sub/accelerometer_multi_goal_page.dart';
 import 'package:dots_game_devide_example/view/accelerometer_sub/accelerometer_random_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/accelerometer_controller.dart';
+import '../controller/count_down_controller.dart';
 import '../util/const.dart';
 
 class AccelerometerPage extends StatefulWidget {
@@ -58,10 +60,11 @@ class _AccelerometerPageState extends State<AccelerometerPage> {
           break;
         case 1:
           Get.put(AccelerometerController());
+          Get.put(CountDownController());
           _page = AccelerometerCountDownPage();
           break;
         case 2:
-          Get.put(AccelerometerController());
+          Get.put(MultiGoalAccelerometerController());
           _page = AccelerometerMultiGoalPage();
           break;
       }
