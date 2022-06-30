@@ -13,10 +13,11 @@ class GamePaintPage extends StatefulWidget {
 
 class _GamePaintPageState extends State<GamePaintPage> {
   double widgetSize = 400.0;
-  int rows = 30;
-  int columns = 30;
+  int rows = 15;
+  int columns = 15;
   double tinyDiff = 0.5;
   late Point<int> point = Point<int>((rows / 2).toInt(), (columns / 2).toInt());
+  late Point<int> goal = getGoal(point, rows, columns);
   late double cellSize = (widgetSize / rows).toDouble();
 
   AccelerometerEvent? acceleration;
@@ -25,20 +26,19 @@ class _GamePaintPageState extends State<GamePaintPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     // 가속도계 정보 취득 리스너
-    _streamSubscription = accelerometerEvents.listen((event) {
-      setState(() {
-        acceleration = event;
-      });
-    });
-
-    // 0.2초마다 실행
-    _timer = Timer.periodic(const Duration(milliseconds: 200), (_) {
-      _step();
-    });
+    // _streamSubscription = accelerometerEvents.listen((event) {
+    //   setState(() {
+    //     acceleration = event;
+    //   });
+    // });
+    //
+    // // 0.2초마다 실행
+    // _timer = Timer.periodic(const Duration(milliseconds: 200), (_) {
+    //   _step();
+    // });
   }
 
   void moveToLeft() {
@@ -76,23 +76,27 @@ class _GamePaintPageState extends State<GamePaintPage> {
             width: widgetSize,
             height: widgetSize,
             child: CustomPaint(
-              foregroundPainter: GamePainter(point, rows, columns, cellSize),
+              foregroundPainter: GamePainter(point, goal, rows, columns, cellSize),
             ),
           ),
+          SizedBox(height: 10,),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
                 onPressed: () {
                   setState(() {
                     moveToLeft();
+                    checkIsGoal();
                   });
                 },
-                child: Icon(Icons.arrow_left),
+                child: Icon(Icons.arrow_back),
               ),
               ElevatedButton(
                 onPressed: () {
                   setState(() {
                     moveToUp();
+                    checkIsGoal();
                   });
                 },
                 child: Icon(Icons.arrow_upward),
@@ -101,6 +105,7 @@ class _GamePaintPageState extends State<GamePaintPage> {
                 onPressed: () {
                   setState(() {
                     moveToDown();
+                    checkIsGoal();
                   });
                 },
                 child: Icon(Icons.arrow_downward),
@@ -109,9 +114,10 @@ class _GamePaintPageState extends State<GamePaintPage> {
                 onPressed: () {
                   setState(() {
                     moveToRight();
+                    checkIsGoal();
                   });
                 },
-                child: Icon(Icons.arrow_right),
+                child: Icon(Icons.arrow_forward),
               ),
             ],
           ),
@@ -186,6 +192,33 @@ class _GamePaintPageState extends State<GamePaintPage> {
       }
     }
   }
+
+  void checkIsGoal() {
+    if(point.x == goal.x && point.y == goal.y) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Goal!!")));
+      point = Point<int>((rows / 2).toInt(), (columns / 2).toInt());
+      goal = getGoal(point, rows, columns);
+    }
+  }
+
+  Point<int> getGoal(Point<int> point, int rows, int columns) {
+    Point<int> goal = const Point<int>(0, 0);
+
+    while (true) {
+      int randomX = Random().nextInt(rows - 1);
+      int randomY = Random().nextInt(columns - 1);
+
+      if (point.x == randomX && point.y == randomY) {
+        continue;
+      } else {
+        goal = Point<int>(randomX, randomY);
+        break;
+      }
+    }
+
+    return goal;
+  }
 }
 
 class GamePainter extends CustomPainter {
@@ -193,9 +226,10 @@ class GamePainter extends CustomPainter {
   int columns;
   double cellSize;
 
-  GamePainter(this.point, this.rows, this.columns, this.cellSize);
+  GamePainter(this.point, this.goal, this.rows, this.columns, this.cellSize);
 
   Point<int> point;
+  Point<int> goal;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -207,6 +241,10 @@ class GamePainter extends CustomPainter {
     // 채워짐(snake)
     final blackFilled = Paint()
       ..color = Colors.black
+      ..style = PaintingStyle.fill;
+
+    final redFilled = Paint()
+      ..color = Colors.red
       ..style = PaintingStyle.fill;
 
     final a = Offset(0.0, 0.0);
@@ -221,6 +259,14 @@ class GamePainter extends CustomPainter {
     final pb = Offset(cellSize * (point.x + 1), cellSize * (point.y + 1));
 
     canvas.drawRect(Rect.fromPoints(pa, pb), blackFilled);
+
+    // 왼쪽위 (x, y)
+    final ga = Offset(cellSize * goal.x, cellSize * goal.y);
+    // 오른쪽아래 (x+1, y+1)
+    final gb = Offset(cellSize * (goal.x + 1), cellSize * (goal.y + 1));
+
+    canvas.drawRect(Rect.fromPoints(ga, gb), redFilled);
+
   }
 
   @override
