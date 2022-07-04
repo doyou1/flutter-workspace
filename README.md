@@ -17,3 +17,7 @@
 - Container vs SizedBox
 
 - mounted
+
+- stack widget
+
+- didChangeDependencies
