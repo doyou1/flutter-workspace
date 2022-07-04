@@ -15,6 +15,8 @@
   - 공부해야한다, 리팩토링을 위해서
 
 - Container vs SizedBox
+  - reference : https://stackoverflow.com/questions/55716322/flutter-sizedbox-vs-container-why-use-one-instead-of-the-other
+  - 번역 : https://www.notion.so/Flutter-SizedBox-VS-Container-why-use-one-instead-of-the-other-Flutter-SizeBox-VS-Container-7b8fe2e023ae400f8924afec15a30987
 
 - mounted
 
