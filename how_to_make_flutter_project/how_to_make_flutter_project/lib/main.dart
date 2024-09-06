@@ -1,38 +1,126 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'main.g.dart';
-
-// 값을 저장할 "provider"를 생성합니다(여기서는 "Hello world").
-// provider를 사용하면 노출된 값을 모의(mock)//재정의(override)할 수 있습니다.
-@riverpod
-String helloWorld(HelloWorldRef ref) {
-  return 'Hello world';
-}
+import 'package:how_to_make_flutter_project/hooks/second.dart';
+import 'package:how_to_make_flutter_project/hooks/use_counter.dart';
+import 'package:provider/provider.dart';
+import 'package:window_size/window_size.dart';
 
 void main() {
+  setupWindow();
   runApp(
-    // 위젯이 providers를 읽을 수 있게 하려면 전체 애플리케이션을 "ProviderScope" 위젯으로 감싸야 합니다.
-    // 여기에 providers의 상태가 저장됩니다.
-    ProviderScope(
-      child: MyApp(),
+    // Provide the model to all widgets within the app. We're using
+    // ChangeNotifierProvider because that's a simple way to rebuild
+    // widgets when a model changes. We could also just use
+    // Provider, but then we would have to listen to Counter ourselves.
+    //
+    // Read Provider's docs to learn about all the available providers.
+    ChangeNotifierProvider(
+      // Initialize the model in the builder. That way, Provider
+      // can own Counter's lifecycle, making sure to call `dispose`
+      // when not needed anymore.
+      create: (context) => Counter(context),
+      child: const MyApp(),
     ),
   );
 }
 
-// Riverpod에 의해 노출되는 StatelessWidget 대신 ConsumerWidget을 확장합니다.
-class MyApp extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final String value = ref.watch(helloWorldProvider);
+const double windowWidth = 360;
+const double windowHeight = 640;
 
+void setupWindow() {
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+    WidgetsFlutterBinding.ensureInitialized();
+    setWindowTitle('Provider Counter');
+    setWindowMinSize(const Size(windowWidth, windowHeight));
+    setWindowMaxSize(const Size(windowWidth, windowHeight));
+    getCurrentScreen().then((screen) {
+      setWindowFrame(Rect.fromCenter(
+        center: screen!.frame.center,
+        width: windowWidth,
+        height: windowHeight,
+      ));
+    });
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Example')),
-        body: Center(
-          child: Text(value),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Counter counter = context.read<Counter>();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flutter Demo Home Page'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(counter.text),
+            // Consumer looks for an ancestor Provider widget
+            // and retrieves its model (Counter, in this case).
+            // Then it uses that model to build widgets, and will trigger
+            // rebuilds if the model is updated.
+            Consumer<Counter>(
+              builder: (context, counter, child) => Text(
+                '${counter.value} ${counter.second.text} ${counter.second.secondValue}',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ),
+            Consumer<Counter>(
+              builder: (context, counter, child) => Text(
+                counter.getCurrentData(),
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ),
+          ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // You can access your providers anywhere you have access
+          // to the context. One way is to use Provider.of<Counter>(context).
+          //
+          // The provider package also defines extension methods on context
+          // itself. You can call context.watch<Counter>() in a build method
+          // of any widget to access the current state of Counter, and to ask
+          // Flutter to rebuild your widget anytime Counter changes.
+          //
+          // You can't use context.watch() outside build methods, because that
+          // often leads to subtle bugs. Instead, you should use
+          // context.read<Counter>(), which gets the current state
+          // but doesn't ask Flutter for future rebuilds.
+          //
+          // Since we're in a callback that will be called whenever the user
+          // taps the FloatingActionButton, we are not in the build method here.
+          // We should use context.read().
+          counter.increment();
+          counter.second.increaseSecondValue();
+        },
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
       ),
     );
   }
