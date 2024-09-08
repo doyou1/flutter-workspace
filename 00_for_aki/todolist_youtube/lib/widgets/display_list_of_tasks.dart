@@ -47,7 +47,7 @@ class DisplayListOfTasks extends StatelessWidget {
                     child: TaskTile(task: task));
                     
                 }, separatorBuilder: (BuildContext context, int index) { 
-                  return Divider(thickness: 1.5,);
+                  return const Divider(thickness: 1.5,);
                  },)
         );
   }

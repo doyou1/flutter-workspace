@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:todolist_youtube/config/routes/routes.dart';
 import 'package:todolist_youtube/data/data.dart';
-import 'package:todolist_youtube/utils/extensions.dart';
 import 'package:todolist_youtube/utils/utils.dart';
 import 'package:todolist_youtube/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
+  static HomeScreen builder(BuildContext context, GoRouterState state) => const HomeScreen();
   const HomeScreen({super.key});
 
   @override
@@ -92,7 +94,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const Gap(20),
                   ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => context.push(RouteLocation.createTask),
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: DisplayWhiteText(text: "Add New Task"),
@@ -106,3 +108,6 @@ class HomeScreen extends StatelessWidget {
     ));
   }
 }
+
+
+// now let's create the add task screen
