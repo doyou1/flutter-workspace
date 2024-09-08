@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:todolist_youtube/data/data.dart';
 import 'package:todolist_youtube/utils/extensions.dart';
 import 'package:todolist_youtube/widgets/widgets.dart';
@@ -21,19 +20,35 @@ class DisplayListOfTasks extends StatelessWidget {
         : "There is no task todo!";
 
     return CommonContainer(
-      height: height,
-      child: tasks.isEmpty
-          ? Center(
-              child: Text(
-                emptyTasksMessage,
-                style: context.textTheme.headlineSmall,
-              ),
-            )
-          : ListView.builder(
-              shrinkWrap: true,
-              itemCount: tasks.length,
-              padding: EdgeInsets.zero,
-              itemBuilder: (context, index) => Text("Home")),
-    );
+        height: height,
+        child: tasks.isEmpty
+            ? Center(
+                child: Text(
+                  emptyTasksMessage,
+                  style: context.textTheme.headlineSmall,
+                ),
+              )
+            : ListView.separated(
+                shrinkWrap: true,
+                itemCount: tasks.length,
+                padding: EdgeInsets.zero,
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+                  return InkWell(
+                    onLongPress: () {
+                      // TODO: Delete task
+                    },
+                    onTap: () async {
+                      // TODO: show task detail
+                      await showModalBottomSheet(context: context, builder: (context) {
+                        return TaskDetails(task: task);
+                      });
+                    },
+                    child: TaskTile(task: task));
+                    
+                }, separatorBuilder: (BuildContext context, int index) { 
+                  return Divider(thickness: 1.5,);
+                 },)
+        );
   }
 }

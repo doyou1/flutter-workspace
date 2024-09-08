@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:todolist_youtube/data/data.dart';
 import 'package:todolist_youtube/utils/extensions.dart';
+import 'package:todolist_youtube/utils/utils.dart';
 import 'package:todolist_youtube/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -35,7 +37,7 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         Positioned(
-          top: 120,
+          top: 180,
           left: 0,
           right: 0,
           child: SafeArea(
@@ -46,8 +48,23 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const DisplayListOfTasks(
-                    tasks: [],
-                    isCompletedTasks: true,
+                    tasks: [
+                      Task(
+                          title: "title",
+                          note: "detail note....",
+                          time: "10:12",
+                          date: "Aug, 9",
+                          isCompleted: false,
+                          category: TaskCategories.others),
+                      Task(
+                          title: "title title title",
+                          note: "",
+                          time: "10:12",
+                          date: "Aug, 9",
+                          isCompleted: false,
+                          category: TaskCategories.home)
+                    ],
+                    isCompletedTasks: false,
                   ),
                   const Gap(20),
                   Text(
@@ -55,8 +72,23 @@ class HomeScreen extends StatelessWidget {
                     style: context.textTheme.headlineMedium,
                   ),
                   const DisplayListOfTasks(
-                    tasks: [],
-                    isCompletedTasks: false,
+                    tasks: [
+                      Task(
+                          title: "title",
+                          note: "note",
+                          time: "10:12",
+                          date: "Aug, 9",
+                          isCompleted: true,
+                          category: TaskCategories.personal),
+                      Task(
+                          title: "title title title",
+                          note: "note",
+                          time: "10:12",
+                          date: "Aug, 9",
+                          isCompleted: true,
+                          category: TaskCategories.health)
+                    ],
+                    isCompletedTasks: true,
                   ),
                   const Gap(20),
                   ElevatedButton(
