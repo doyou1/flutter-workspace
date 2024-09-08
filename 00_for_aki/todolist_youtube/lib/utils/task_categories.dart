@@ -11,6 +11,13 @@ enum TaskCategories {
   travel(Icons.flight, Colors.deepOrange),
   work(Icons.work, Colors.amber);
 
+  static TaskCategories stringToCategory(String name) {
+    try {
+      return TaskCategories.values.firstWhere((category) => category.name == name);
+    } catch(e) {
+      return TaskCategories.others;
+    }
+  }
 
   final IconData icon;
   final Color color;
