@@ -5,11 +5,15 @@ import 'package:todolist_youtube/providers/providers.dart';
 
 class TaskNotifier extends StateNotifier<TaskState> {
   final TaskRepository _repository;
-  TaskNotifier(this._repository) : super(const TaskState.initial());
+  TaskNotifier(this._repository) : super(const TaskState.initial()) {
+    // load all task as soon the app opens or instance of this class is created
+    getTasks();
+  }
 
   Future<void> createTask(Task task) async {
     try {
       await _repository.createTask(task);
+      getTasks();
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -20,6 +24,7 @@ class TaskNotifier extends StateNotifier<TaskState> {
       final newIsCompleted = !task.isCompleted;
       final updatedTask = task.copyWith(isCompleted: newIsCompleted);
       await _repository.updateTask(updatedTask);
+      getTasks();
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -28,12 +33,13 @@ class TaskNotifier extends StateNotifier<TaskState> {
   Future<void> deleteTask(Task task) async {
     try {
       await _repository.deleteTask(task);
+      getTasks();
     } catch (e) {
       debugPrint(e.toString());
     }
   }
 
-  Future<void> getTasks() async {
+  void getTasks() async {
     try {
       final tasks = await _repository.getAllTasks();
       state = state.copyWith(tasks: tasks);
