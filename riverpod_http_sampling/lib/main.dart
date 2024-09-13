@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_http_sampling/api_provider.dart';
+import 'package:riverpod_http_sampling/create_user_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: const MyApp()));
@@ -51,6 +52,11 @@ class UserListScreen extends ConsumerWidget {
           },
           error: (error, stack) => Text(error.toString()),
           loading: () => const Center(child: CircularProgressIndicator())),
+          floatingActionButton: FloatingActionButton(onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => CreateUserScreen())
+            );
+          }, child: const Icon(Icons.add),),
     );
   }
 }
