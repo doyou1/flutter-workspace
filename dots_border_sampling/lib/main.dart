@@ -23,16 +23,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -40,16 +30,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -65,7 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
             DotsButton(
               width: 320,
               height: 72,
-              borderRadius: 12,
               backgroundColor: Color(0xFFFF7033),
               shadowColor: Color(0xFF903F1C),
               child: Center(
@@ -84,7 +65,6 @@ class _MyHomePageState extends State<MyHomePage> {
             DotsButton(
               width: 320,
               height: 72,
-              borderRadius: 12,
               backgroundColor: Color(0xFF903F1C),
               shadowColor: Color(0xFF903F1C),
               child: Center(
@@ -103,7 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
             DotsButton(
               width: 320,
               height: 72,
-              borderRadius: 12,
               backgroundColor: Color(0xFFA4928B),
               shadowColor: Color(0xFFA4928B),
               child: Center(
@@ -122,7 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
             DotsButton(
               width: 62,
               height: 62,
-              borderRadius: 12,
               backgroundColor: Color(0xFFFF7033),
               shadowColor: Color(0xFF903F1C),
               child: Center(
@@ -145,7 +123,6 @@ class DotsButton extends StatelessWidget {
       {super.key,
       required this.width,
       required this.height,
-      required this.borderRadius,
       required this.backgroundColor,
       required this.shadowColor,
       this.borderColor = const Color(0xFFFFFFFF),
@@ -153,23 +130,21 @@ class DotsButton extends StatelessWidget {
 
   final double width;
   final double height;
-  final double borderRadius;
   final Color backgroundColor;
   final Color shadowColor;
   final Color borderColor;
   final Widget child;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width,
       height: height,
       child: CustomPaint(
-        foregroundPainter: DotsBorderPainter(
-            shadowColor: shadowColor, borderColor: borderColor),
+        painter: DotsBorderPainter(
+            backgroundColor: backgroundColor,
+            shadowColor: shadowColor,
+            borderColor: borderColor),
         child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(borderRadius),
-              color: backgroundColor),
           child: child,
         ),
       ),
@@ -180,7 +155,11 @@ class DotsButton extends StatelessWidget {
 class DotsBorderPainter extends CustomPainter {
   final Color shadowColor;
   final Color borderColor;
-  DotsBorderPainter({required this.shadowColor, required this.borderColor});
+  final Color backgroundColor;
+  DotsBorderPainter(
+      {required this.backgroundColor,
+      required this.shadowColor,
+      required this.borderColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -201,8 +180,14 @@ class DotsBorderPainter extends CustomPainter {
       ..color = shadowColor
       ..strokeWidth = strokeWidth
       ..style = PaintingStyle.fill;
-
     _drawBottomShape(canvas, size, strokeWidth, paint2);
+
+    // 4. 내부 백그라운드 채우기
+    final paint3 = Paint()
+      ..color = backgroundColor
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.fill;
+    _paintBackground(canvas, size, strokeWidth, paint3);
   }
 
   // 테두리 그리기 함수
@@ -306,6 +291,42 @@ class DotsBorderPainter extends CustomPainter {
     path.lineTo(strokeWidth * 1, size.height - (strokeWidth * 2));
     path.lineTo(0, size.height - (strokeWidth * 2));
     path.lineTo(0, size.height - (strokeWidth * 3));
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  void _paintBackground(
+      Canvas canvas, Size size, double strokeWidth, Paint paint) {
+    final path = Path();
+    path.moveTo(strokeWidth * 3, strokeWidth);
+    path.lineTo(size.width - (strokeWidth * 3), strokeWidth);
+    path.lineTo(size.width - (strokeWidth * 3), strokeWidth * 2);
+    path.lineTo(size.width - (strokeWidth * 2), strokeWidth * 2);
+    path.lineTo(size.width - (strokeWidth * 2), strokeWidth * 3);
+    path.lineTo(size.width - (strokeWidth * 1), strokeWidth * 3);
+    path.lineTo(
+        size.width - (strokeWidth * 1), size.height - (strokeWidth * 3));
+    path.lineTo(
+        size.width - (strokeWidth * 2), size.height - (strokeWidth * 3));
+    path.lineTo(
+        size.width - (strokeWidth * 2), size.height - (strokeWidth * 2));
+    path.lineTo(
+        size.width - (strokeWidth * 3), size.height - (strokeWidth * 2));
+    path.lineTo(
+        size.width - (strokeWidth * 3), size.height - (strokeWidth * 1));
+    path.lineTo(
+        size.width - (strokeWidth * 4), size.height - (strokeWidth * 1));
+    path.lineTo((strokeWidth * 3), size.height - (strokeWidth * 1));
+    path.lineTo((strokeWidth * 3), size.height - (strokeWidth * 2));
+    path.lineTo((strokeWidth * 2), size.height - (strokeWidth * 2));
+    path.lineTo((strokeWidth * 2), size.height - (strokeWidth * 3));
+    path.lineTo((strokeWidth * 1), size.height - (strokeWidth * 3));
+    path.lineTo((strokeWidth * 1), size.height - (strokeWidth * 4));
+    path.lineTo((strokeWidth * 1), (strokeWidth * 3));
+    path.lineTo((strokeWidth * 2), (strokeWidth * 3));
+    path.lineTo((strokeWidth * 2), (strokeWidth * 2));
+    path.lineTo((strokeWidth * 3), (strokeWidth * 2));
+    path.lineTo((strokeWidth * 3), (strokeWidth * 1));
     path.close();
     canvas.drawPath(path, paint);
   }
