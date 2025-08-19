@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todolist_youtube/data/data.dart';
+import 'package:todolist_youtube/providers/providers.dart';
 import 'package:todolist_youtube/utils/utils.dart';
 import 'package:todolist_youtube/widgets/widgets.dart';
 
-class DisplayListOfTasks extends StatelessWidget {
+class DisplayListOfTasks extends ConsumerWidget {
   const DisplayListOfTasks(
       {super.key, required this.tasks, this.isCompletedTasks = false});
 
@@ -11,7 +13,7 @@ class DisplayListOfTasks extends StatelessWidget {
   final bool isCompletedTasks;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final deviceSize = context.deviceSize;
     final height =
         isCompletedTasks ? deviceSize.height * 0.25 : deviceSize.height * 0.3;
@@ -35,8 +37,11 @@ class DisplayListOfTasks extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final task = tasks[index];
                   return InkWell(
-                    onLongPress: () {
+                    onLongPress:  () async {
                       // TODO: Delete task
+                       await ref.read(taskProvider.notifier).deleteTask(task).then((value) {
+                        // AppAlerts.displaySnackBar(context, "Task created Successfully");
+                      });
                     },
                     onTap: () async {
                       // TODO: show task detail

@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:todolist_youtube/data/data.dart';
+import 'package:todolist_youtube/providers/providers.dart';
 import 'package:todolist_youtube/utils/extensions.dart';
 import 'package:todolist_youtube/widgets/widgets.dart';
 
-class TaskTile extends StatelessWidget {
+class TaskTile extends ConsumerWidget {
   const TaskTile({super.key, required this.task, this.onChanged});
 
   final Task task;
   final Function(bool?)? onChanged;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final style = context.textTheme;
     final double iconOpacity = task.isCompleted ? 0.3 : 0.5;
     final double backgroundOpacity = task.isCompleted ? 0.1 : 0.3;
@@ -49,7 +51,11 @@ class TaskTile extends StatelessWidget {
               ],
             ),
           ),
-          Checkbox(value: task.isCompleted, onChanged: onChanged)
+          InkWell(
+              onTap: () async {
+                await ref.read(taskProvider.notifier).updateTask(task);
+              },
+              child: Checkbox(value: task.isCompleted, onChanged: onChanged))
         ],
       ),
     );
