@@ -1,0 +1,186 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+### 🚀 Riverpod 3.0 기능 중심 개발 핵심 규칙
+
+이 규칙의 목표는 **빠른 개발 속도**, **직관적인 코드**, **기능 단위의 독립성**을 확보하는 것입니다.
+
+---
+
+의존성 추가할 때 pubspec.yaml 파일에 작성하고 추가해줘 그리고 기존에 있던 다른 의존성들 버전을 건들이지마
+
+파라미터에서 FollowRepositoryRef ref -> Ref ref 이렇게 작성해줘
+
+import 'package:bookstar/common/theme/app_themes.dart'; 에 있는 AppTheme을 최대한 사용하기
+
+### 1. 기본 원칙 (The Core Principles)
+
+1. **코드 생성기를 적극 사용하라 (`@riverpod` 필수).**
+    - 모든 Provider는 `@riverpod` 어노테이션으로 정의합니다. `Provider`, `StateNotifierProvider` 같은 구문은 더 이상 사용하지 않습니다.
+    - 이를 통해 보일러플레이트를 최소화하고, 타입 안정성을 확보하며, `ref`, `.notifier` 등의 최신 기능을 활용할 수 있습니다.
+2. **기능(Feature) 단위로 파일을 구성하라.**
+    - `lib/src/features/` 디렉토리 아래에 기능별로 폴더를 생성합니다. (예: `auth`, `products`, `cart`)
+    - 각 기능 폴더 안에서 `data`(저장소), `domain`(모델), `presentation`(UI, 상태관리) 등으로 자유롭게 하위 폴더를 구성합니다.
+    - 이렇게 하면 특정 기능을 수정할 때 한 폴더 내에서 대부분의 작업이 끝나 유지보수가 편리해집니다.
+3. **상태는 불변(Immutable)으로 관리하라.**
+    - 상태 객체(State Class)는 `freezed` 패키지를 사용하여 불변으로 만듭니다.
+    - 상태를 변경할 때는 `state = state.copyWith(...)`를 사용하여 새로운 객체를 생성합니다. 이는 예측 가능성을 높이고 버그를 줄여줍니다.
+4. **색상은 `const` 상수로 관리하라. 🎨**Dart
+    - 앱 전체의 디자인 일관성을 유지하고, 향후 색상 변경을 용이하게 하기 위해 색상은 한곳에서 상수로 관리합니다.
+    - `lib/src/core/theme/app_colors.dart` 와 같은 파일을 만들어 색상을 정의하고, 위젯에서는 이 상수를 참조하여 사용합니다.
+    - 이렇게 하면 하드코딩된 `Color(0xFF...)` 값이 코드에 흩어지는 것을 방지할 수 있습니다.
+    
+    # 
+    
+    `// in app_colors.dart
+    class AppColors {
+      static const Color primary = Color(0xFF6200EE);
+      static const Color scaffoldBackground = Color(0xFFFFFFFF);
+      static const Color textPrimary = Color(0xFF333333);
+    }
+    
+    // in a widget
+    Container(
+      color: AppColors.primary,
+      child: Text(
+        'Hello',
+        style: TextStyle(color: AppColors.textPrimary),
+      ),
+    )`
+    
+
+---
+
+### 2. Provider 정의 및 사용 규칙
+
+1. **Provider 네이밍 컨벤션: `(역할)Provider`**
+    - `AuthRepository` 클래스 → `authRepositoryProvider`
+    - `CartNotifier` 클래스 → `cartNotifierProvider`
+    - 이름만 봐도 어떤 Provider인지 명확히 알 수 있도록 합니다.
+2. **역할에 맞는 Provider를 선택하라.**
+    - **`@riverpod` (Provider)**: 단순 의존성 주입용. `Repository`, `ApiService` 등 상태 변화가 없는 클래스 주입에 사용합니다.
+    - **`@riverpod` (AsyncNotifier)**: **서버 상태 관리의 핵심**. API 통신 등 비동기 데이터를 다룰 때 사용합니다. `AsyncValue`를 통해 로딩, 데이터, 에러 상태를 자동으로 처리해 줍니다.
+    - **`@riverpod` (Notifier)**: 동기적인 상태 관리용. 테마 설정, 카운터 등 UI와 상호작용하는 간단한 상태에 사용합니다.
+3. **Provider는 작고 명확하게 유지하라.**
+    - 하나의 Provider가 너무 많은 일을 하지 않도록 분리합니다. 예를 들어 `UserProvider` 하나에 프로필, 설정, 알림 등을 모두 넣지 말고, `UserProfileProvider`, `UserSettingsProvider` 등으로 분리하는 것을 고려합니다.
+
+---
+
+### 3. 디렉토리 구조 예시 (Feature-Driven Structure)
+
+```java
+lib
+├── auth
+│   ├── models
+│   ├── screens
+│   ├── services
+│   └── widgets
+├── book
+│   ├── models
+│   ├── screens
+│   ├── services
+│   └── widgets
+├── chat
+│   ├── models
+│   ├── screens
+│   ├── services
+│   └── widgets
+├── common
+│   │
+│   │── constants
+│   │── di
+│   │── router
+│   │── theme
+│   ├── models
+│   ├── screens
+│   ├── services
+│   └── widgets
+├── profile
+│   ├── models
+│   ├── screens
+│   ├── services
+│   └── widgets
+└── search
+    ├── models
+    ├── screens
+    ├── services
+    └── widgets
+
+36 directories, 0 files
+
+```
+
+---
+
+### 4. 상태 관리 및 UI 연동 패턴
+
+1. **서버 데이터는 `AsyncNotifier`와 `AsyncValue`로 처리한다.**Dart
+    - `isLoading`, `error` 같은 상태 변수를 직접 만들지 마세요. `AsyncValue`가 모두 처리해 줍니다.
+    - UI에서는 `ref.watch(provider).when()`을 사용하여 로딩, 데이터, 에러 상태를 깔끔하게 분기 처리합니다.
+    
+    # 
+    
+    `// in auth_notifier.dart
+    @riverpod
+    class AuthNotifier extends _$AuthNotifier {
+      @override
+      Future<User?> build() async {
+        // 초기 상태 로직 (예: 로그인 여부 확인)
+        return null;
+      }
+    
+      Future<void> login(String email, String password) async {
+        state = const AsyncValue.loading();
+        state = await AsyncValue.guard(() async {
+          return ref.read(authRepositoryProvider).login(email, password);
+        });
+      }
+    }
+    
+    // in login_screen.dart (build method)
+    Widget build(BuildContext context, WidgetRef ref) {
+      final authState = ref.watch(authNotifierProvider);
+    
+      return authState.when(
+        data: (user) => Text(user?.name ?? 'Logged Out'),
+        loading: () => const CircularProgressIndicator(),
+        error: (err, stack) => Text('Error: $err'),
+      );
+    }`
+    
+2. **메서드 호출은 `ref.read(provider.notifier)`로 한다.**Dart
+    - `onPressed` 같은 이벤트 콜백 안에서는 `ref.watch`가 아닌 `ref.read`를 사용해 불필요한 위젯 리빌드를 방지합니다.
+    - 상태를 변경하는 메서드를 호출할 때는 `.notifier`를 통해 Notifier 인스턴스에 접근합니다.
+    
+    # 
+    
+    `ElevatedButton(
+      onPressed: () {
+        ref.read(authNotifierProvider.notifier).login('email', 'password');
+      },
+      child: const Text('Login'),
+    )`
+    
+3. **Provider에 파라미터가 필요하면 함수형으로 정의한다.**Dart
+    - Riverpod 3.0에서는 함수형으로 Provider를 정의하면 파라미터를 넘기는 것이 매우 간단합니다. 특정 ID로 데이터를 가져오는 경우에 유용합니다.
+    
+    # 
+    
+    `// 게시물 하나를 가져오는 Provider
+    @riverpod
+    Future<Post> post(PostRef ref, int postId) {
+      return ref.watch(postRepositoryProvider).fetchPost(postId);
+    }
+    
+    // UI에서 사용
+    final post = ref.watch(postProvider(123)); // 123번 게시물 가져오기`
+    
+4. **유지되어야 하는 상태는 `keepAlive`를 사용한다.**Dart
+    - 사용자가 앱의 다른 곳을 탐색하더라도 유지되어야 하는 상태(예: 인증 상태, 장바구니)는 `keepAlive` 플래그를 추가합니다.
+    
+    # 
+    
+    `@Riverpod(keepAlive: true)
+    class AuthNotifier extends _$AuthNotifier { ... }`
