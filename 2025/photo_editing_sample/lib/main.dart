@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gal/gal.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:pro_image_editor/core/models/editor_callbacks/pro_image_editor_callbacks.dart';
+import 'package:pro_image_editor/core/models/editor_configs/pro_image_editor_configs.dart';
+import 'package:pro_image_editor/features/main_editor/main_editor.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,6 +27,7 @@ class _PhotoSwiperWidgetState extends State<PhotoSwiperWidget> {
   final List<String> images = [];
   final ImagePicker _picker = ImagePicker();
   int _currentIndex = 0;
+  bool _isEditing = false;
 
   // 사진 선택
   Future<void> _pickImage(ImageSource source) async {
@@ -41,6 +46,18 @@ class _PhotoSwiperWidgetState extends State<PhotoSwiperWidget> {
       if (_currentIndex >= images.length && images.isNotEmpty) {
         _currentIndex = images.length - 1;
       }
+    });
+  }
+
+  void _editImage(int index) {
+    setState(() {
+      _isEditing = true;
+    });
+  }
+
+  void _endEditing() {
+    setState(() {
+      _isEditing = false;
     });
   }
 
@@ -88,7 +105,11 @@ class _PhotoSwiperWidgetState extends State<PhotoSwiperWidget> {
               ? GestureDetector(
                   onTap: _showImageSourceDialog,
                   child: Center(
-                    child: Icon(Icons.add_photo_alternate, size: 50, color: Colors.white,),
+                    child: Icon(
+                      Icons.add_photo_alternate,
+                      size: 50,
+                      color: Colors.white,
+                    ),
                   ),
                 )
               : Stack(
@@ -97,8 +118,27 @@ class _PhotoSwiperWidgetState extends State<PhotoSwiperWidget> {
                       itemCount: images.length,
                       onPageChanged: (index) =>
                           setState(() => _currentIndex = index),
-                      itemBuilder: (context, index) =>
-                          Image.file(File(images[index]), fit: BoxFit.cover),
+                      itemBuilder: (context, index) => !_isEditing
+                          ? Image.file(File(images[index]), fit: BoxFit.cover)
+                          : ProImageEditor.file(
+                              File(images[index]),
+                              configs: ProImageEditorConfigs(
+                                i18n: I18n(
+
+                                )
+                                // designMode: ImageEditorDesignMode.values
+                              ),
+                              callbacks: ProImageEditorCallbacks(
+                                onImageEditingComplete: (bytes) async {
+                                  await Gal.putImageBytes(
+                                    bytes,
+                                    name:
+                                        "test_${DateTime.now().millisecondsSinceEpoch}",
+                                  );
+                                  _endEditing();
+                                },
+                              ),
+                            ),
                     ),
                     // 삭제 버튼
                     Positioned(
@@ -116,6 +156,17 @@ class _PhotoSwiperWidgetState extends State<PhotoSwiperWidget> {
                       child: GestureDetector(
                         onTap: _showImageSourceDialog,
                         child: Icon(Icons.add, color: Colors.white, size: 30),
+                      ),
+                    ),
+                    // 편집 버튼
+                    Positioned(
+                      top: 10,
+                      right: 90,
+                      child: GestureDetector(
+                        onTap: () => !_isEditing
+                            ? _editImage(_currentIndex)
+                            : _endEditing(),
+                        child: Icon(Icons.edit, color: Colors.white, size: 30),
                       ),
                     ),
                   ],
